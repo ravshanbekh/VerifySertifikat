@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  operator
+  super_admin
+}
+
+enum CertificateStatus {
+  active
+  revoked
+}
+
+enum AuditAction {
+  created
+  updated
+  revoked
+  reissued
+  uploaded
+}
+
+model User {
+  id            String    @id @default(uuid())
+  full_name     String
+  email         String    @unique
+  password_hash String
+  role          Role      @default(operator)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  certificates Certificate[]
+  audit_logs   AuditLog[]
+
+  @@map("users")
+}
+
+model Certificate {
+  id                 String            @id @default(uuid())
+  serial_series      String
+  serial_number      String            @unique
+  full_name          String
+  course_name        String
+  course_description String?           @db.Text
+  course_start_date  DateTime          @db.Date
+  course_end_date    DateTime          @db.Date
+  status             CertificateStatus @default(active)
+  file_url           String?
+  qr_code_url        String?
+  is_generated       Boolean           @default(true)
+  created_by_id      String
+  created_at         DateTime          @default(now())
+  updated_at         DateTime          @updatedAt
+
+  created_by User       @relation(fields: [created_by_id], references: [id])
+  audit_logs AuditLog[]
+
+  @@index([serial_number])
+  @@index([status])
+  @@map("certificates")
+}
+
+model AuditLog {
+  id             String      @id @default(uuid())
+  user_id        String
+  action         AuditAction
+  certificate_id String?
+  details        Json?
+  ip_address     String?
+  created_at     DateTime    @default(now())
+
+  user        User         @relation(fields: [user_id], references: [id])
+  certificate Certificate? @relation(fields: [certificate_id], references: [id])
+
+  @@index([certificate_id])
+  @@index([user_id])
+  @@map("audit_logs")
+}
