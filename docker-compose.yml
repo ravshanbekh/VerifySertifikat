@@ -31,8 +31,8 @@ services:
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_EXPIRES_IN: 15m
       JWT_REFRESH_EXPIRES_IN: 7d
-      BASE_URL: https://verify.itlive.uz
-      FRONTEND_URL: https://verify.itlive.uz
+      BASE_URL: ${BASE_URL:-https://verify.itlive.uz}
+      FRONTEND_URL: ${FRONTEND_URL:-https://verify.itlive.uz}
       NODE_ENV: production
       PORT: 4000
     volumes:
@@ -50,7 +50,7 @@ services:
     container_name: itlive_frontend
     restart: always
     environment:
-      NEXT_PUBLIC_API_URL: https://verify.itlive.uz/api
+      NEXT_PUBLIC_API_URL: ${API_URL:-https://verify.itlive.uz/api}
     networks:
       - itlive_network
 
