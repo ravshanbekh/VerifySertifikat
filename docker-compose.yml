@@ -33,8 +33,8 @@ services:
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
       JWT_EXPIRES_IN: 15m
       JWT_REFRESH_EXPIRES_IN: 7d
-      BASE_URL: https://verify.itliveacademy.uz
-      FRONTEND_URL: https://verify.itliveacademy.uz
+      BASE_URL: https://verify.itlive.uz
+      FRONTEND_URL: https://verify.itlive.uz
       NODE_ENV: production
       PORT: 4000
     volumes:
@@ -52,7 +52,7 @@ services:
     container_name: itlive_frontend
     restart: always
     environment:
-      NEXT_PUBLIC_API_URL: https://verify.itliveacademy.uz/api
+      NEXT_PUBLIC_API_URL: https://verify.itlive.uz/api
     networks:
       - itlive_network
 
@@ -80,7 +80,7 @@ services:
     volumes:
       - certbot_www:/var/www/certbot
       - certbot_conf:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/var/www/certbot --email your@email.com -d verify.itliveacademy.uz --agree-tos --no-eff-email
+    command: certonly --webroot --webroot-path=/var/www/certbot --email your@email.com -d verify.itlive.uz --agree-tos --no-eff-email
 
 networks:
   itlive_network:
