@@ -1,4 +1,4 @@
-import { prisma } from './src/config/database';
+import { prisma } from './config/database';
 import bcrypt from 'bcryptjs';
 
 async function seed() {
@@ -25,7 +25,7 @@ async function seed() {
   }
 
   // Test sertifikat (ixtiyoriy)
-  const testSerial = 'ITLA-000001';
+  const testSerial = 'ITLA-00000001'; // 8-xonali
   const existing_cert = await prisma.certificate.findUnique({ where: { serial_number: testSerial } });
   if (!existing_cert) {
     const admin = await prisma.user.findUnique({ where: { email } });

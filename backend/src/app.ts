@@ -17,6 +17,9 @@ import auditRoutes from './modules/audit/audit.routes';
 
 const app = express();
 
+// Rate limit trust proxy
+app.set('trust proxy', 1);
+
 // Upload papkalarini yaratish
 const uploadDirs = [
   './uploads',

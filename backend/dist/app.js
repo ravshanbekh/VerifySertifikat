@@ -51,6 +51,8 @@ const certificates_routes_1 = __importDefault(require("./modules/certificates/ce
 const users_routes_1 = __importDefault(require("./modules/users/users.routes"));
 const audit_routes_1 = __importDefault(require("./modules/audit/audit.routes"));
 const app = (0, express_1.default)();
+// Rate limit trust proxy
+app.set('trust proxy', 1);
 // Upload papkalarini yaratish
 const uploadDirs = [
     './uploads',
