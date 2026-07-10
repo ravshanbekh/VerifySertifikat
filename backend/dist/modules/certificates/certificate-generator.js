@@ -85,14 +85,14 @@ async function generateCertificateImage(options, outputPath) {
             wrappedDesc.push('');
         }
         else {
-            // 3507px kenglikda, 50px font bilan ~85 belgi sig'adi
-            wrappedDesc.push(...wrapText(line, 85));
+            // 205px dan boshlab stripesgacha kengaytirish uchun 95 belgi qildik
+            wrappedDesc.push(...wrapText(line, 95));
         }
     }
     const descFontSize = 50; // 12 pt at 300 DPI = 50 px
     const descLineHeight = 67; // 16 pt at 300 DPI = 67 px
-    const descStartY = 1380; // Teparoqqa surildi (1440 dan 1380 ga)
-    const descX = 260; // PSD ruler bo'yicha X = 260 px
+    const descStartY = 1380; // Teparoqqa surilgan
+    const descX = 205; // Qizil hoshiya chizig'iga moslandi (260 dan 205 ga)
     // Kurs tavsifi SVG qatorlari
     const descSvgLines = wrappedDesc
         .map((line, i) => {
@@ -100,9 +100,9 @@ async function generateCertificateImage(options, outputPath) {
         return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#00182C" font-family="Noto Sans" font-weight="400">${he(line)}</text>`;
     })
         .join('\n');
-    const nameFontSize = 240; // Ism biroz kichiklashtirildi (288 dan 240 ga)
-    const nameY = 1180; // Teparoqqa surildi (1280 dan 1180 ga)
-    const nameX = 260; // PSD ruler bo'yicha X = 260 px
+    const nameFontSize = 240; // Ism o'lchami
+    const nameY = 1180; // Teparoqqa surilgan
+    const nameX = 205; // Qizil hoshiya chizig'iga moslandi (260 dan 205 ga)
     // Sana va seriya raqami (PSD o'lchamlariga moslangan)
     const dateY = 2030; // Chiziqqa yaqinlashtirildi (2010 dan 2030 ga)
     const dateX = 2140; // PSD ruler bo'yicha X = 2140 px
