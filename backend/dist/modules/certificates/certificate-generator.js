@@ -85,29 +85,29 @@ async function generateCertificateImage(options, outputPath) {
             wrappedDesc.push('');
         }
         else {
-            // 95 belgi — 1024px kenglikda to'g'ri sig'adi
-            wrappedDesc.push(...wrapText(line, 95));
+            // 3507px kenglikda, 50px font bilan ~85 belgi sig'adi
+            wrappedDesc.push(...wrapText(line, 85));
         }
     }
-    const descFontSize = 13;
-    const descLineHeight = 19;
-    const descStartY = H * 0.56; // Shablon bo'yicha ~406px
-    const descX = W * 0.05; // Chap chekka ~51px
-    // Kurs tavsifi SVG satrlari
+    const descFontSize = 50; // 12 pt at 300 DPI = 50 px
+    const descLineHeight = 67; // 16 pt at 300 DPI = 67 px
+    const descStartY = 1440; // PSD ruler bo'yicha Y = 1440 px
+    const descX = 260; // PSD ruler bo'yicha X = 260 px
+    // Kurs tavsifi SVG qatorlari
     const descSvgLines = wrappedDesc
         .map((line, i) => {
         const y = descStartY + i * descLineHeight;
-        return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#1C232C" font-family="Noto Sans" font-weight="400">${he(line)}</text>`;
+        return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#00182C" font-family="Noto Sans" font-weight="400">${he(line)}</text>`;
     })
         .join('\n');
-    const nameFontSize = 58;
-    const nameY = H * 0.46; // ~333px
-    const nameX = W * 0.04; // ~41px
-    // Sana va seriya raqami (pastki qism)
-    const dateY = H * 0.835; // ~605px
-    const dateX = W * 0.62; // ~635px
-    const serialY = H * 0.875; // ~634px
-    const serialX = W * 0.62;
+    const nameFontSize = 288; // 69.08 pt at 300 DPI = 288 px
+    const nameY = 1280; // PSD ruler bo'yicha Y = 1280 px
+    const nameX = 260; // PSD ruler bo'yicha X = 260 px
+    // Sana va seriya raqami (PSD o'lchamlariga moslangan)
+    const dateY = 2010; // PSD ruler bo'yicha Y = 2010 px
+    const dateX = 2140; // PSD ruler bo'yicha X = 2140 px
+    const serialY = 2210; // PSD ruler bo'yicha Y = 2210 px
+    const serialX = 2140; // PSD ruler bo'yicha X = 2140 px
     const svgOverlay = `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
   <!-- Ism (Great Vibes) -->
@@ -115,7 +115,7 @@ async function generateCertificateImage(options, outputPath) {
     x="${nameX}"
     y="${nameY}"
     font-size="${nameFontSize}"
-    fill="#1C232C"
+    fill="#00182C"
     font-family="Great Vibes"
     font-weight="400"
   >${he(fullName)}</text>
@@ -123,11 +123,11 @@ async function generateCertificateImage(options, outputPath) {
   <!-- Kurs tavsifi -->
   ${descSvgLines}
 
-  <!-- Sana -->
-  <text x="${dateX}" y="${dateY}" font-size="14" fill="#1C232C" font-family="Noto Sans" font-weight="700">${he(formatDate(courseEndDate))}</text>
+  <!-- Sana (Roboto Regular) -->
+  <text x="${dateX}" y="${dateY}" font-size="72" fill="#00182C" font-family="Noto Sans" font-weight="400">${he(formatDate(courseEndDate))}</text>
 
-  <!-- Seriya raqami -->
-  <text x="${serialX}" y="${serialY}" font-size="15" fill="#1C232C" font-family="Noto Sans" font-weight="900" letter-spacing="1">${he(serialNumber)}</text>
+  <!-- Seriya raqami (Roboto Bold) -->
+  <text x="${serialX}" y="${serialY}" font-size="72" fill="#00182C" font-family="Noto Sans" font-weight="700">${he(serialNumber)}</text>
 </svg>`.trim();
     const svgBuffer = Buffer.from(svgOverlay);
     // Shablon + overlay birlashtirish va PNG saqlash
