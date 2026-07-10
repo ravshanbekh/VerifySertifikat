@@ -18,6 +18,33 @@ export default function CertificateDetailPage() {
   const [userRole, setUserRole] = useState<string>("");
   const [revoking, setRevoking] = useState(false);
   const [reissuing, setReissuing] = useState(false);
+  const [downloadingFormat, setDownloadingFormat] = useState<'pdf' | 'png' | null>(null);
+
+  const handleDownload = async (format: 'pdf' | 'png') => {
+    setDownloadingFormat(format);
+    try {
+      const token = localStorage.getItem('access_token');
+      const res = await fetch(`${API_BASE}/api/certificates/${id}/download?format=${format}`, {
+        headers: {
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
+      });
+      if (!res.ok) throw new Error('Yuklab olish muvaffaqiyatsiz tugadi');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${cert?.serial_number || 'sertifikat'}.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error('Yuklab olishda xatolik yuz berdi');
+    } finally {
+      setDownloadingFormat(null);
+    }
+  };
 
   useEffect(() => {
     Promise.all([
@@ -205,22 +232,30 @@ export default function CertificateDetailPage() {
         <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
           <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-3">Yuklab olish</p>
           <div className="flex gap-3 flex-wrap">
-            <a
-              href={`${API_BASE}/api/certificates/${id}/download?format=png`}
-              download
-              className="flex items-center gap-2 px-5 py-2.5 bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 border border-purple-200 dark:border-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold rounded-xl text-sm transition-colors shadow-sm"
+            <button
+              onClick={() => handleDownload('png')}
+              disabled={downloadingFormat !== null}
+              className="flex items-center gap-2 px-5 py-2.5 bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 border border-purple-200 dark:border-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold rounded-xl text-sm transition-colors shadow-sm disabled:opacity-50"
             >
-              <Download className="w-4 h-4" />
+              {downloadingFormat === 'png' ? (
+                <div className="w-4 h-4 border-2 border-purple-500/30 border-t-purple-700 rounded-full animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
               PNG yuklash
-            </a>
-            <a
-              href={`${API_BASE}/api/certificates/${id}/download?format=pdf`}
-              download
-              className="flex items-center gap-2 px-5 py-2.5 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 border border-orange-200 dark:border-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold rounded-xl text-sm transition-colors shadow-sm"
+            </button>
+            <button
+              onClick={() => handleDownload('pdf')}
+              disabled={downloadingFormat !== null}
+              className="flex items-center gap-2 px-5 py-2.5 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 border border-orange-200 dark:border-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold rounded-xl text-sm transition-colors shadow-sm disabled:opacity-50"
             >
-              <Download className="w-4 h-4" />
+              {downloadingFormat === 'pdf' ? (
+                <div className="w-4 h-4 border-2 border-orange-500/30 border-t-orange-700 rounded-full animate-spin" />
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
               PDF yuklash
-            </a>
+            </button>
           </div>
         </div>
       </div>

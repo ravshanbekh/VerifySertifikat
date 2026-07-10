@@ -106,17 +106,9 @@ export async function generateCertificateImage(
   const descSvgLines = wrappedDesc
     .map((line, i) => {
       const y = descStartY + i * descLineHeight;
-      return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#1C232C" font-family="Arial, Helvetica, sans-serif" font-weight="400">${he(line)}</text>`;
+      return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#1C232C" font-family="Noto Sans" font-weight="400">${he(line)}</text>`;
     })
     .join('\n');
-
-  // Ism (Great Vibes shriftini SVG embed qilamiz)
-  // Great Vibes TTF ni base64 ga aylantirish
-  const fontPath = path.join(FONTS_DIR, 'GreatVibes-Regular.ttf');
-  let fontBase64 = '';
-  if (fs.existsSync(fontPath)) {
-    fontBase64 = fs.readFileSync(fontPath).toString('base64');
-  }
 
   const nameFontSize = 58;
   const nameY = H * 0.46; // ~333px
@@ -130,27 +122,13 @@ export async function generateCertificateImage(
 
   const svgOverlay = `
 <svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-  ${fontBase64 ? `
-  <defs>
-    <style>
-      @font-face {
-        font-family: 'GreatVibes';
-        src: url('data:font/truetype;base64,${fontBase64}');
-        font-weight: normal;
-        font-style: normal;
-      }
-    </style>
-  </defs>
-  ` : ''}
-
   <!-- Ism (Great Vibes) -->
   <text
     x="${nameX}"
     y="${nameY}"
     font-size="${nameFontSize}"
     fill="#1C232C"
-    font-family="${fontBase64 ? 'GreatVibes' : 'Georgia, serif'}"
-    font-style="${fontBase64 ? 'normal' : 'italic'}"
+    font-family="Great Vibes"
     font-weight="400"
   >${he(fullName)}</text>
 
@@ -158,10 +136,10 @@ export async function generateCertificateImage(
   ${descSvgLines}
 
   <!-- Sana -->
-  <text x="${dateX}" y="${dateY}" font-size="14" fill="#1C232C" font-family="Arial, Helvetica, sans-serif" font-weight="700">${he(formatDate(courseEndDate))}</text>
+  <text x="${dateX}" y="${dateY}" font-size="14" fill="#1C232C" font-family="Noto Sans" font-weight="700">${he(formatDate(courseEndDate))}</text>
 
   <!-- Seriya raqami -->
-  <text x="${serialX}" y="${serialY}" font-size="15" fill="#1C232C" font-family="Arial, Helvetica, sans-serif" font-weight="900" letter-spacing="1">${he(serialNumber)}</text>
+  <text x="${serialX}" y="${serialY}" font-size="15" fill="#1C232C" font-family="Noto Sans" font-weight="900" letter-spacing="1">${he(serialNumber)}</text>
 </svg>`.trim();
 
   const svgBuffer = Buffer.from(svgOverlay);
