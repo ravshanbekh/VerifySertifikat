@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "ITLive Academy — Sertifikat Tekshirish",
   description: "ITLive Academy tomonidan berilgan sertifikatlarning haqiqiyligini tekshiring",
   keywords: "sertifikat, tekshirish, ITLive Academy, verify",
+  icons: {
+    icon: "/logo-dark.svg",
+  },
 };
 
 export default function RootLayout({
