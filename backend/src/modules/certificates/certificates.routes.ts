@@ -12,6 +12,7 @@ import {
   updateCertificate,
   revokeCertificate,
   reissueCertificate,
+  downloadCertificate,
 } from './certificates.controller';
 
 // Multer sozlamasi
@@ -54,5 +55,6 @@ router.post('/upload', upload.single('file'), uploadCertificate);
 router.put('/:id', updateCertificate);
 router.post('/:id/reissue', reissueCertificate);
 router.post('/:id/revoke', requireRole('super_admin'), revokeCertificate);
+router.get('/:id/download', downloadCertificate);
 
 export default router;

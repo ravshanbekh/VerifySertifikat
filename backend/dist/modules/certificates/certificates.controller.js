@@ -3,23 +3,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reissueCertificate = exports.revokeCertificate = exports.updateCertificate = exports.uploadCertificate = exports.createCertificate = exports.getCertificateById = exports.getCertificates = exports.verifyCertificate = void 0;
+exports.reissueCertificate = exports.revokeCertificate = exports.updateCertificate = exports.uploadCertificate = exports.downloadCertificate = exports.createCertificate = exports.getCertificateById = exports.getCertificates = exports.verifyCertificate = void 0;
 const database_1 = require("../../config/database");
 const env_1 = require("../../config/env");
 const qrcode_1 = __importDefault(require("qrcode"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-// Serial raqam generatsiya
+const certificate_generator_1 = require("./certificate-generator");
+// Serial raqam generatsiya (8 xonali)
 const generateSerialNumber = async (series) => {
     const count = await database_1.prisma.certificate.count({
         where: { serial_series: series },
     });
-    const num = String(count + 1).padStart(6, '0');
+    const num = String(count + 1).padStart(8, '0');
     return `${series}-${num}`;
 };
-// QR kod generatsiya va saqlash
+// Kurs nomidan seriya prefiksini aniqlash
+const getSeriesFromCourse = (courseName) => {
+    const entry = certificate_generator_1.COURSE_SERIES_MAP[courseName];
+    if (entry)
+        return entry.prefix;
+    // Nomalum kurs uchun: birinchi 2 harf (katta)
+    return courseName.slice(0, 2).toUpperCase();
+};
+// Kursga mos tavsifni olish
+const getDescriptionFromCourse = (courseName, customDesc) => {
+    if (customDesc && customDesc.trim())
+        return customDesc.trim();
+    const entry = certificate_generator_1.COURSE_SERIES_MAP[courseName];
+    return entry?.description || '';
+};
+// QR kod generatsiya va saqlash (faqat keyingi foydalanish uchun saqlanadi, shablon o'zgarmaydi)
 const generateQRCode = async (serialNumber) => {
-    const verifyUrl = `${env_1.config.baseUrl.replace(':4000', ':3000')}/c/${serialNumber}`;
+    const verifyUrl = `${env_1.config.frontendUrl}/c/${serialNumber}`;
     const qrDir = path_1.default.join(env_1.config.uploadDir, 'qrcodes');
     if (!fs_1.default.existsSync(qrDir))
         fs_1.default.mkdirSync(qrDir, { recursive: true });
@@ -27,6 +43,21 @@ const generateQRCode = async (serialNumber) => {
     const filePath = path_1.default.join(qrDir, filename);
     await qrcode_1.default.toFile(filePath, verifyUrl, { width: 300, margin: 2 });
     return `/uploads/qrcodes/${filename}`;
+};
+// Sertifikat PNG + PDF generatsiya qilish
+const generateCertificateFiles = async (serialNumber, fullName, courseName, courseDescription, courseEndDate) => {
+    const certDir = path_1.default.join(env_1.config.uploadDir, 'generated');
+    if (!fs_1.default.existsSync(certDir))
+        fs_1.default.mkdirSync(certDir, { recursive: true });
+    const safeName = serialNumber.replace(/[^a-zA-Z0-9]/g, '-');
+    const pngPath = path_1.default.join(certDir, `cert-${safeName}.png`);
+    const pdfPath = path_1.default.join(certDir, `cert-${safeName}.pdf`);
+    await (0, certificate_generator_1.generateCertificateImage)({ fullName, courseName, courseDescription, courseEndDate, serialNumber }, pngPath);
+    await (0, certificate_generator_1.convertPngToPdf)(pngPath, pdfPath);
+    return {
+        pngUrl: `/uploads/generated/cert-${safeName}.png`,
+        pdfUrl: `/uploads/generated/cert-${safeName}.pdf`,
+    };
 };
 // Public: sertifikatni tekshirish
 const verifyCertificate = async (req, res) => {
@@ -139,11 +170,14 @@ exports.getCertificateById = getCertificateById;
 // Admin: yangi sertifikat yaratish (generatsiya)
 const createCertificate = async (req, res) => {
     try {
-        const { serial_series = 'ITLA', serial_number: customSerial, full_name, course_name, course_description, course_start_date, course_end_date, } = req.body;
+        const { serial_number: customSerial, full_name, course_name, course_description, course_start_date, course_end_date, } = req.body;
         if (!full_name || !course_name || !course_start_date || !course_end_date) {
             res.status(400).json({ success: false, message: 'Majburiy maydonlar to\'ldirilmagan' });
             return;
         }
+        // Kurs nomiga qarab seriya prefiksi
+        const serial_series = getSeriesFromCourse(course_name);
+        const finalDescription = getDescriptionFromCourse(course_name, course_description);
         // Serial raqam
         let serialNumber = customSerial;
         if (!serialNumber) {
@@ -155,18 +189,32 @@ const createCertificate = async (req, res) => {
             res.status(400).json({ success: false, message: 'Bu seriya raqam allaqachon mavjud' });
             return;
         }
-        // QR kod
+        // QR kod (saqlanadi lekin shablon ichiga qo'shilmaydi)
         const qrCodeUrl = await generateQRCode(serialNumber);
+        // Sertifikat PNG + PDF generatsiya
+        const endDate = new Date(course_end_date);
+        let pngUrl;
+        let pdfUrl;
+        try {
+            const files = await generateCertificateFiles(serialNumber, full_name, course_name, finalDescription, endDate);
+            pngUrl = files.pngUrl;
+            pdfUrl = files.pdfUrl;
+        }
+        catch (genErr) {
+            console.error('Sertifikat generatsiyada xato:', genErr);
+            // Generatsiya xato bo'lsa ham sertifikat saqlanadi
+        }
         const cert = await database_1.prisma.certificate.create({
             data: {
                 serial_series,
                 serial_number: serialNumber,
                 full_name,
                 course_name,
-                course_description,
+                course_description: finalDescription,
                 course_start_date: new Date(course_start_date),
-                course_end_date: new Date(course_end_date),
+                course_end_date: endDate,
                 qr_code_url: qrCodeUrl,
+                file_url: pdfUrl, // PDF manzili
                 is_generated: true,
                 created_by_id: req.user.id,
             },
@@ -180,7 +228,11 @@ const createCertificate = async (req, res) => {
                 ip_address: req.ip,
             },
         });
-        res.status(201).json({ success: true, data: cert, message: 'Sertifikat yaratildi' });
+        res.status(201).json({
+            success: true,
+            data: { ...cert, png_url: pngUrl },
+            message: 'Sertifikat yaratildi',
+        });
     }
     catch (err) {
         console.error(err);
@@ -188,6 +240,48 @@ const createCertificate = async (req, res) => {
     }
 };
 exports.createCertificate = createCertificate;
+// Admin: sertifikat faylini (PNG yoki PDF) yuklash
+const downloadCertificate = async (req, res) => {
+    try {
+        const cert = await database_1.prisma.certificate.findUnique({
+            where: { id: req.params.id },
+        });
+        if (!cert) {
+            res.status(404).json({ success: false, message: 'Topilmadi' });
+            return;
+        }
+        const format = req.query.format || 'pdf';
+        const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
+        const certDir = path_1.default.join(env_1.config.uploadDir, 'generated');
+        const filePath = path_1.default.join(certDir, `cert-${safeName}.${format}`);
+        if (!fs_1.default.existsSync(filePath)) {
+            // Fayl yo'q bo'lsa qayta generatsiya
+            const pngPath = path_1.default.join(certDir, `cert-${safeName}.png`);
+            const pdfPath = path_1.default.join(certDir, `cert-${safeName}.pdf`);
+            if (!fs_1.default.existsSync(certDir))
+                fs_1.default.mkdirSync(certDir, { recursive: true });
+            await (0, certificate_generator_1.generateCertificateImage)({
+                fullName: cert.full_name,
+                courseName: cert.course_name,
+                courseDescription: cert.course_description || '',
+                courseEndDate: cert.course_end_date,
+                serialNumber: cert.serial_number,
+            }, pngPath);
+            if (format === 'pdf') {
+                await (0, certificate_generator_1.convertPngToPdf)(pngPath, pdfPath);
+            }
+        }
+        const mimeType = format === 'pdf' ? 'application/pdf' : 'image/png';
+        res.setHeader('Content-Disposition', `attachment; filename="${cert.serial_number}.${format}"`);
+        res.setHeader('Content-Type', mimeType);
+        fs_1.default.createReadStream(filePath).pipe(res);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server xatosi' });
+    }
+};
+exports.downloadCertificate = downloadCertificate;
 // Admin: fayl yuklash orqali sertifikat
 const uploadCertificate = async (req, res) => {
     try {

@@ -4,6 +4,7 @@ export declare const verifyCertificate: (req: Request, res: Response) => Promise
 export declare const getCertificates: (req: AuthRequest, res: Response) => Promise<void>;
 export declare const getCertificateById: (req: AuthRequest, res: Response) => Promise<void>;
 export declare const createCertificate: (req: AuthRequest, res: Response) => Promise<void>;
+export declare const downloadCertificate: (req: AuthRequest, res: Response) => Promise<void>;
 export declare const uploadCertificate: (req: AuthRequest, res: Response) => Promise<void>;
 export declare const updateCertificate: (req: AuthRequest, res: Response) => Promise<void>;
 export declare const revokeCertificate: (req: AuthRequest, res: Response) => Promise<void>;

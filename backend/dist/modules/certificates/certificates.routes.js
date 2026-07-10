@@ -45,5 +45,6 @@ router.post('/upload', upload.single('file'), certificates_controller_1.uploadCe
 router.put('/:id', certificates_controller_1.updateCertificate);
 router.post('/:id/reissue', certificates_controller_1.reissueCertificate);
 router.post('/:id/revoke', (0, auth_middleware_1.requireRole)('super_admin'), certificates_controller_1.revokeCertificate);
+router.get('/:id/download', certificates_controller_1.downloadCertificate);
 exports.default = router;
 //# sourceMappingURL=certificates.routes.js.map

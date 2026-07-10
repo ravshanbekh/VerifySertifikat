@@ -5,19 +5,35 @@ import QRCode from 'qrcode';
 import path from 'path';
 import fs from 'fs';
 import { AuthRequest } from '../../middleware/auth.middleware';
+import { generateCertificateImage, convertPngToPdf, COURSE_SERIES_MAP } from './certificate-generator';
 
-// Serial raqam generatsiya
+// Serial raqam generatsiya (8 xonali)
 const generateSerialNumber = async (series: string): Promise<string> => {
   const count = await prisma.certificate.count({
     where: { serial_series: series },
   });
-  const num = String(count + 1).padStart(6, '0');
+  const num = String(count + 1).padStart(8, '0');
   return `${series}-${num}`;
 };
 
-// QR kod generatsiya va saqlash
+// Kurs nomidan seriya prefiksini aniqlash
+const getSeriesFromCourse = (courseName: string): string => {
+  const entry = COURSE_SERIES_MAP[courseName];
+  if (entry) return entry.prefix;
+  // Nomalum kurs uchun: birinchi 2 harf (katta)
+  return courseName.slice(0, 2).toUpperCase();
+};
+
+// Kursga mos tavsifni olish
+const getDescriptionFromCourse = (courseName: string, customDesc?: string): string => {
+  if (customDesc && customDesc.trim()) return customDesc.trim();
+  const entry = COURSE_SERIES_MAP[courseName];
+  return entry?.description || '';
+};
+
+// QR kod generatsiya va saqlash (faqat keyingi foydalanish uchun saqlanadi, shablon o'zgarmaydi)
 const generateQRCode = async (serialNumber: string): Promise<string> => {
-  const verifyUrl = `${config.baseUrl.replace(':4000', ':3000')}/c/${serialNumber}`;
+  const verifyUrl = `${config.frontendUrl}/c/${serialNumber}`;
   const qrDir = path.join(config.uploadDir, 'qrcodes');
   if (!fs.existsSync(qrDir)) fs.mkdirSync(qrDir, { recursive: true });
 
@@ -25,6 +41,33 @@ const generateQRCode = async (serialNumber: string): Promise<string> => {
   const filePath = path.join(qrDir, filename);
   await QRCode.toFile(filePath, verifyUrl, { width: 300, margin: 2 });
   return `/uploads/qrcodes/${filename}`;
+};
+
+// Sertifikat PNG + PDF generatsiya qilish
+const generateCertificateFiles = async (
+  serialNumber: string,
+  fullName: string,
+  courseName: string,
+  courseDescription: string,
+  courseEndDate: Date,
+): Promise<{ pngUrl: string; pdfUrl: string }> => {
+  const certDir = path.join(config.uploadDir, 'generated');
+  if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
+
+  const safeName = serialNumber.replace(/[^a-zA-Z0-9]/g, '-');
+  const pngPath = path.join(certDir, `cert-${safeName}.png`);
+  const pdfPath = path.join(certDir, `cert-${safeName}.pdf`);
+
+  await generateCertificateImage(
+    { fullName, courseName, courseDescription, courseEndDate, serialNumber },
+    pngPath,
+  );
+  await convertPngToPdf(pngPath, pdfPath);
+
+  return {
+    pngUrl: `/uploads/generated/cert-${safeName}.png`,
+    pdfUrl: `/uploads/generated/cert-${safeName}.pdf`,
+  };
 };
 
 // Public: sertifikatni tekshirish
@@ -140,7 +183,6 @@ export const getCertificateById = async (req: AuthRequest, res: Response): Promi
 export const createCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const {
-      serial_series = 'ITLA',
       serial_number: customSerial,
       full_name,
       course_name,
@@ -153,6 +195,10 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
       res.status(400).json({ success: false, message: 'Majburiy maydonlar to\'ldirilmagan' });
       return;
     }
+
+    // Kurs nomiga qarab seriya prefiksi
+    const serial_series = getSeriesFromCourse(course_name);
+    const finalDescription = getDescriptionFromCourse(course_name, course_description);
 
     // Serial raqam
     let serialNumber = customSerial;
@@ -167,8 +213,27 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    // QR kod
+    // QR kod (saqlanadi lekin shablon ichiga qo'shilmaydi)
     const qrCodeUrl = await generateQRCode(serialNumber);
+
+    // Sertifikat PNG + PDF generatsiya
+    const endDate = new Date(course_end_date);
+    let pngUrl: string | undefined;
+    let pdfUrl: string | undefined;
+    try {
+      const files = await generateCertificateFiles(
+        serialNumber,
+        full_name,
+        course_name,
+        finalDescription,
+        endDate,
+      );
+      pngUrl = files.pngUrl;
+      pdfUrl = files.pdfUrl;
+    } catch (genErr) {
+      console.error('Sertifikat generatsiyada xato:', genErr);
+      // Generatsiya xato bo'lsa ham sertifikat saqlanadi
+    }
 
     const cert = await prisma.certificate.create({
       data: {
@@ -176,10 +241,11 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
         serial_number: serialNumber,
         full_name,
         course_name,
-        course_description,
+        course_description: finalDescription,
         course_start_date: new Date(course_start_date),
-        course_end_date: new Date(course_end_date),
+        course_end_date: endDate,
         qr_code_url: qrCodeUrl,
+        file_url: pdfUrl, // PDF manzili
         is_generated: true,
         created_by_id: req.user!.id,
       },
@@ -195,7 +261,58 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
       },
     });
 
-    res.status(201).json({ success: true, data: cert, message: 'Sertifikat yaratildi' });
+    res.status(201).json({
+      success: true,
+      data: { ...cert, png_url: pngUrl },
+      message: 'Sertifikat yaratildi',
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+};
+
+// Admin: sertifikat faylini (PNG yoki PDF) yuklash
+export const downloadCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const cert = await prisma.certificate.findUnique({
+      where: { id: req.params.id as string },
+    });
+    if (!cert) {
+      res.status(404).json({ success: false, message: 'Topilmadi' });
+      return;
+    }
+
+    const format = (req.query.format as string) || 'pdf';
+    const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
+    const certDir = path.join(config.uploadDir, 'generated');
+    const filePath = path.join(certDir, `cert-${safeName}.${format}`);
+
+    if (!fs.existsSync(filePath)) {
+      // Fayl yo'q bo'lsa qayta generatsiya
+      const pngPath = path.join(certDir, `cert-${safeName}.png`);
+      const pdfPath = path.join(certDir, `cert-${safeName}.pdf`);
+      if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
+
+      await generateCertificateImage(
+        {
+          fullName: cert.full_name,
+          courseName: cert.course_name,
+          courseDescription: cert.course_description || '',
+          courseEndDate: cert.course_end_date,
+          serialNumber: cert.serial_number,
+        },
+        pngPath,
+      );
+      if (format === 'pdf') {
+        await convertPngToPdf(pngPath, pdfPath);
+      }
+    }
+
+    const mimeType = format === 'pdf' ? 'application/pdf' : 'image/png';
+    res.setHeader('Content-Disposition', `attachment; filename="${cert.serial_number}.${format}"`);
+    res.setHeader('Content-Type', mimeType);
+    fs.createReadStream(filePath).pipe(res);
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server xatosi' });

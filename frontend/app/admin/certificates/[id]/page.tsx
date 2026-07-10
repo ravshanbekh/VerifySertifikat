@@ -6,7 +6,7 @@ import { certificateApi, type Certificate, authApi } from "@/lib/api";
 import Link from "next/link";
 import {
   ArrowLeft, CheckCircle, XCircle, RefreshCw, Edit2, QrCode,
-  FileText, Calendar, User, ExternalLink
+  FileText, Calendar, User, ExternalLink, Download
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -199,6 +199,29 @@ export default function CertificateDetailPage() {
             <ExternalLink className="w-4 h-4" />
             Public ko&apos;rish
           </a>
+        </div>
+
+        {/* Yuklab olish */}
+        <div className="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800">
+          <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-3">Yuklab olish</p>
+          <div className="flex gap-3 flex-wrap">
+            <a
+              href={`${API_BASE}/api/certificates/${id}/download?format=png`}
+              download
+              className="flex items-center gap-2 px-5 py-2.5 bg-purple-50 dark:bg-purple-500/10 hover:bg-purple-100 dark:hover:bg-purple-500/20 border border-purple-200 dark:border-purple-900/30 text-purple-700 dark:text-purple-400 font-semibold rounded-xl text-sm transition-colors shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              PNG yuklash
+            </a>
+            <a
+              href={`${API_BASE}/api/certificates/${id}/download?format=pdf`}
+              download
+              className="flex items-center gap-2 px-5 py-2.5 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 border border-orange-200 dark:border-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold rounded-xl text-sm transition-colors shadow-sm"
+            >
+              <Download className="w-4 h-4" />
+              PDF yuklash
+            </a>
+          </div>
         </div>
       </div>
     </div>
