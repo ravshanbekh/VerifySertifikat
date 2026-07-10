@@ -11,6 +11,7 @@ const actionColors: Record<string, string> = {
   revoked: "text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-900/30",
   reissued: "text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-900/30",
   uploaded: "text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-900/30",
+  deleted: "text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-900/30",
 };
 
 const actionLabels: Record<string, string> = {
@@ -19,6 +20,7 @@ const actionLabels: Record<string, string> = {
   revoked: "Bekor qilindi",
   reissued: "Qayta chiqarildi",
   uploaded: "Yuklandi",
+  deleted: "O'chirildi",
 };
 
 export default function AuditLogPage() {

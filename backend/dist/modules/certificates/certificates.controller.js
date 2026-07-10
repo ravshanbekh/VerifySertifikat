@@ -3,19 +3,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reissueCertificate = exports.revokeCertificate = exports.updateCertificate = exports.uploadCertificate = exports.downloadCertificate = exports.createCertificate = exports.getCertificateById = exports.getCertificates = exports.verifyCertificate = void 0;
+exports.deleteCertificate = exports.reissueCertificate = exports.revokeCertificate = exports.updateCertificate = exports.uploadCertificate = exports.downloadCertificate = exports.createCertificate = exports.getCertificateById = exports.getCertificates = exports.verifyCertificate = void 0;
 const database_1 = require("../../config/database");
 const env_1 = require("../../config/env");
 const qrcode_1 = __importDefault(require("qrcode"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const certificate_generator_1 = require("./certificate-generator");
-// Serial raqam generatsiya (8 xonali)
+// Serial raqam generatsiya (eng oxirgi raqamga 1 qo'shib davom ettirish)
 const generateSerialNumber = async (series) => {
-    const count = await database_1.prisma.certificate.count({
+    const latestCert = await database_1.prisma.certificate.findFirst({
         where: { serial_series: series },
+        orderBy: { serial_number: 'desc' },
     });
-    const num = String(count + 1).padStart(8, '0');
+    let nextNum = 1;
+    if (latestCert) {
+        const parts = latestCert.serial_number.split('-');
+        if (parts.length > 1) {
+            const lastPart = parts[parts.length - 1];
+            const numPart = parseInt(lastPart, 10);
+            if (!isNaN(numPart)) {
+                nextNum = numPart + 1;
+            }
+        }
+    }
+    const num = String(nextNum).padStart(8, '0');
     return `${series}-${num}`;
 };
 // Kurs nomidan seriya prefiksini aniqlash
@@ -450,4 +462,48 @@ const reissueCertificate = async (req, res) => {
     }
 };
 exports.reissueCertificate = reissueCertificate;
+// Admin: sertifikatni o'chirish
+const deleteCertificate = async (req, res) => {
+    try {
+        const cert = await database_1.prisma.certificate.findUnique({ where: { id: req.params.id } });
+        if (!cert) {
+            res.status(404).json({ success: false, message: 'Topilmadi' });
+            return;
+        }
+        // Fayllarni o'chirish
+        const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
+        const certDir = path_1.default.join(env_1.config.uploadDir, 'generated');
+        const qrDir = path_1.default.join(env_1.config.uploadDir, 'qrcodes');
+        const pngPath = path_1.default.join(certDir, `cert-${safeName}.png`);
+        const pdfPath = path_1.default.join(certDir, `cert-${safeName}.pdf`);
+        const qrPath = path_1.default.join(qrDir, `qr-${safeName}.png`);
+        if (fs_1.default.existsSync(pngPath))
+            fs_1.default.unlinkSync(pngPath);
+        if (fs_1.default.existsSync(pdfPath))
+            fs_1.default.unlinkSync(pdfPath);
+        if (fs_1.default.existsSync(qrPath))
+            fs_1.default.unlinkSync(qrPath);
+        // Agar yuklangan sertifikat bo'lsa (fayldan yuklangan)
+        if (cert.file_url && !cert.is_generated) {
+            const uploadedPath = path_1.default.join(process.cwd(), cert.file_url);
+            if (fs_1.default.existsSync(uploadedPath))
+                fs_1.default.unlinkSync(uploadedPath);
+        }
+        await database_1.prisma.certificate.delete({ where: { id: req.params.id } });
+        await database_1.prisma.auditLog.create({
+            data: {
+                user_id: req.user.id,
+                action: 'deleted',
+                details: { serial_number: cert.serial_number, full_name: cert.full_name },
+                ip_address: req.ip,
+            },
+        });
+        res.json({ success: true, message: 'Sertifikat muvaffaqiyatli o\'chirildi' });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server xatosi' });
+    }
+};
+exports.deleteCertificate = deleteCertificate;
 //# sourceMappingURL=certificates.controller.js.map

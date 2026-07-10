@@ -27,6 +27,7 @@ enum AuditAction {
   revoked
   reissued
   uploaded
+  deleted
 }
 
 model User {
