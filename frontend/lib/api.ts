@@ -123,6 +123,12 @@ export const certificateApi = {
   reissue: async (id: string) => {
     return apiFetch(`/certificates/${id}/reissue`, { method: 'POST' });
   },
+
+  delete: async (id: string) => {
+    return apiFetch<{ success: boolean; message: string }>(`/certificates/${id}`, {
+      method: 'DELETE',
+    });
+  },
 };
 
 // Users API

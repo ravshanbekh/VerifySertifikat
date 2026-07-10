@@ -7,12 +7,26 @@ import fs from 'fs';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { generateCertificateImage, convertPngToPdf, COURSE_SERIES_MAP } from './certificate-generator';
 
-// Serial raqam generatsiya (8 xonali)
+// Serial raqam generatsiya (eng oxirgi raqamga 1 qo'shib davom ettirish)
 const generateSerialNumber = async (series: string): Promise<string> => {
-  const count = await prisma.certificate.count({
+  const latestCert = await prisma.certificate.findFirst({
     where: { serial_series: series },
+    orderBy: { serial_number: 'desc' },
   });
-  const num = String(count + 1).padStart(8, '0');
+
+  let nextNum = 1;
+  if (latestCert) {
+    const parts = latestCert.serial_number.split('-');
+    if (parts.length > 1) {
+      const lastPart = parts[parts.length - 1];
+      const numPart = parseInt(lastPart, 10);
+      if (!isNaN(numPart)) {
+        nextNum = numPart + 1;
+      }
+    }
+  }
+
+  const num = String(nextNum).padStart(8, '0');
   return `${series}-${num}`;
 };
 
@@ -508,6 +522,52 @@ export const reissueCertificate = async (req: AuthRequest, res: Response): Promi
     });
 
     res.json({ success: true, data: updated, message: 'Sertifikat qayta chiqarildi' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Server xatosi' });
+  }
+};
+
+// Admin: sertifikatni o'chirish
+export const deleteCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const cert = await prisma.certificate.findUnique({ where: { id: req.params.id as string } });
+    if (!cert) {
+      res.status(404).json({ success: false, message: 'Topilmadi' });
+      return;
+    }
+
+    // Fayllarni o'chirish
+    const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
+    const certDir = path.join(config.uploadDir, 'generated');
+    const qrDir = path.join(config.uploadDir, 'qrcodes');
+
+    const pngPath = path.join(certDir, `cert-${safeName}.png`);
+    const pdfPath = path.join(certDir, `cert-${safeName}.pdf`);
+    const qrPath = path.join(qrDir, `qr-${safeName}.png`);
+
+    if (fs.existsSync(pngPath)) fs.unlinkSync(pngPath);
+    if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+    if (fs.existsSync(qrPath)) fs.unlinkSync(qrPath);
+
+    // Agar yuklangan sertifikat bo'lsa (fayldan yuklangan)
+    if (cert.file_url && !cert.is_generated) {
+      const uploadedPath = path.join(process.cwd(), cert.file_url);
+      if (fs.existsSync(uploadedPath)) fs.unlinkSync(uploadedPath);
+    }
+
+    await prisma.certificate.delete({ where: { id: req.params.id as string } });
+
+    await prisma.auditLog.create({
+      data: {
+        user_id: req.user!.id,
+        action: 'deleted',
+        details: { serial_number: cert.serial_number, full_name: cert.full_name },
+        ip_address: req.ip,
+      },
+    });
+
+    res.json({ success: true, message: 'Sertifikat muvaffaqiyatli o\'chirildi' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: 'Server xatosi' });

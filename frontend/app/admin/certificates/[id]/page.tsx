@@ -6,7 +6,7 @@ import { certificateApi, type Certificate, authApi } from "@/lib/api";
 import Link from "next/link";
 import {
   ArrowLeft, CheckCircle, XCircle, RefreshCw, Edit2, QrCode,
-  FileText, Calendar, User, ExternalLink, Download
+  FileText, Calendar, User, ExternalLink, Download, Trash2
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -18,7 +18,21 @@ export default function CertificateDetailPage() {
   const [userRole, setUserRole] = useState<string>("");
   const [revoking, setRevoking] = useState(false);
   const [reissuing, setReissuing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [downloadingFormat, setDownloadingFormat] = useState<'pdf' | 'png' | null>(null);
+
+  const handleDelete = async () => {
+    if (!confirm("Haqiqatan ham bu sertifikatni butunlay o'chirib tashlamoqchimisiz? Ushbu amalni ortga qaytarib bo'lmaydi va barcha rasm/PDF fayllar o'chib ketadi!")) return;
+    setDeleting(true);
+    try {
+      await certificateApi.delete(id);
+      toast.success("Sertifikat o'chirildi");
+      router.push("/admin/certificates");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "O'chirishda xatolik");
+      setDeleting(false);
+    }
+  };
 
   const handleDownload = async (format: 'pdf' | 'png') => {
     setDownloadingFormat(format);
@@ -217,6 +231,15 @@ export default function CertificateDetailPage() {
               Bekor qilish
             </button>
           )}
+
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="flex items-center gap-2 px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl text-sm transition-colors shadow-md shadow-rose-500/10 disabled:opacity-50"
+          >
+            <Trash2 className="w-4 h-4" />
+            O&apos;chirish
+          </button>
 
           <a
             href={`/c/${cert.serial_number}`}
