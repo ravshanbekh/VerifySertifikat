@@ -99,7 +99,7 @@ export async function generateCertificateImage(
 
   const descFontSize = 50;     // 12 pt at 300 DPI = 50 px
   const descLineHeight = 67;   // 16 pt at 300 DPI = 67 px
-  const descStartY = 1440;     // PSD ruler bo'yicha Y = 1440 px
+  const descStartY = 1380;     // Teparoqqa surildi (1440 dan 1380 ga)
   const descX = 260;           // PSD ruler bo'yicha X = 260 px
 
   // Kurs tavsifi SVG qatorlari
@@ -110,14 +110,14 @@ export async function generateCertificateImage(
     })
     .join('\n');
 
-  const nameFontSize = 288;    // 69.08 pt at 300 DPI = 288 px
-  const nameY = 1280;          // PSD ruler bo'yicha Y = 1280 px
+  const nameFontSize = 240;    // Ism biroz kichiklashtirildi (288 dan 240 ga)
+  const nameY = 1180;          // Teparoqqa surildi (1280 dan 1180 ga)
   const nameX = 260;           // PSD ruler bo'yicha X = 260 px
 
   // Sana va seriya raqami (PSD o'lchamlariga moslangan)
-  const dateY = 2010;          // PSD ruler bo'yicha Y = 2010 px
+  const dateY = 2030;          // Chiziqqa yaqinlashtirildi (2010 dan 2030 ga)
   const dateX = 2140;          // PSD ruler bo'yicha X = 2140 px
-  const serialY = 2210;        // PSD ruler bo'yicha Y = 2210 px
+  const serialY = 2280;        // Linkni to'sib qo'ymasligi uchun pastga tushirildi (2210 dan 2280 ga)
   const serialX = 2140;        // PSD ruler bo'yicha X = 2140 px
 
   const svgOverlay = `
