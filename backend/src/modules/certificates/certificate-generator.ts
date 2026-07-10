@@ -92,8 +92,8 @@ export async function generateCertificateImage(
     if (line.trim() === '') {
       wrappedDesc.push('');
     } else {
-      // 205px dan boshlab stripesgacha kengaytirish uchun 95 belgi qildik
-      wrappedDesc.push(...wrapText(line, 95));
+      // 205px dan boshlab stripesgacha kengaytirish uchun 100 belgi qildik
+      wrappedDesc.push(...wrapText(line, 100));
     }
   }
 
@@ -106,7 +106,15 @@ export async function generateCertificateImage(
   const descSvgLines = wrappedDesc
     .map((line, i) => {
       const y = descStartY + i * descLineHeight;
-      return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#00182C" font-family="Noto Sans" font-weight="400">${he(line)}</text>`;
+      let lineContent = he(line);
+      
+      // Birinchi qator boshidagi kurs nomini qalin (bold) qilish
+      if (i === 0 && line.startsWith(courseName)) {
+        const rest = line.substring(courseName.length);
+        lineContent = `<tspan font-weight="700">${he(courseName)}</tspan>${he(rest)}`;
+      }
+      
+      return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#00182C" font-family="Noto Sans" font-weight="400">${lineContent}</text>`;
     })
     .join('\n');
 
