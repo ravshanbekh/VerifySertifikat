@@ -288,26 +288,22 @@ export const downloadCertificate = async (req: AuthRequest, res: Response): Prom
     const certDir = path.join(config.uploadDir, 'generated');
     const filePath = path.join(certDir, `cert-${safeName}.${format}`);
 
-    if (!fs.existsSync(filePath)) {
-      // Fayl yo'q bo'lsa qayta generatsiya
-      const pngPath = path.join(certDir, `cert-${safeName}.png`);
-      const pdfPath = path.join(certDir, `cert-${safeName}.pdf`);
-      if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
+    const pngPath = path.join(certDir, `cert-${safeName}.png`);
+    const pdfPath = path.join(certDir, `cert-${safeName}.pdf`);
+    if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
 
-      await generateCertificateImage(
-        {
-          fullName: cert.full_name,
-          courseName: cert.course_name,
-          courseDescription: cert.course_description || '',
-          courseEndDate: cert.course_end_date,
-          serialNumber: cert.serial_number,
-        },
-        pngPath,
-      );
-      if (format === 'pdf') {
-        await convertPngToPdf(pngPath, pdfPath);
-      }
-    }
+    // Always regenerate to apply font/style fixes
+    await generateCertificateImage(
+      {
+        fullName: cert.full_name,
+        courseName: cert.course_name,
+        courseDescription: cert.course_description || '',
+        courseEndDate: cert.course_end_date,
+        serialNumber: cert.serial_number,
+      },
+      pngPath,
+    );
+    await convertPngToPdf(pngPath, pdfPath);
 
     const mimeType = format === 'pdf' ? 'application/pdf' : 'image/png';
     res.setHeader('Content-Disposition', `attachment; filename="${cert.serial_number}.${format}"`);
@@ -474,9 +470,32 @@ export const reissueCertificate = async (req: AuthRequest, res: Response): Promi
     // Yangi QR kod qayta yaratish
     const qrCodeUrl = await generateQRCode(cert.serial_number);
 
+    // Qayta generatsiya qilish
+    const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
+    const certDir = path.join(config.uploadDir, 'generated');
+    const pngPath = path.join(certDir, `cert-${safeName}.png`);
+    const pdfPath = path.join(certDir, `cert-${safeName}.pdf`);
+    if (!fs.existsSync(certDir)) fs.mkdirSync(certDir, { recursive: true });
+
+    await generateCertificateImage(
+      {
+        fullName: cert.full_name,
+        courseName: cert.course_name,
+        courseDescription: cert.course_description || '',
+        courseEndDate: cert.course_end_date,
+        serialNumber: cert.serial_number,
+      },
+      pngPath,
+    );
+    await convertPngToPdf(pngPath, pdfPath);
+
     const updated = await prisma.certificate.update({
       where: { id: req.params.id as string },
-      data: { qr_code_url: qrCodeUrl, status: 'active' },
+      data: {
+        qr_code_url: qrCodeUrl,
+        file_url: `/uploads/generated/cert-${safeName}.pdf`,
+        status: 'active'
+      },
     });
 
     await prisma.auditLog.create({
@@ -489,7 +508,8 @@ export const reissueCertificate = async (req: AuthRequest, res: Response): Promi
     });
 
     res.json({ success: true, data: updated, message: 'Sertifikat qayta chiqarildi' });
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false, message: 'Server xatosi' });
   }
 };

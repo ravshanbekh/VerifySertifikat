@@ -254,23 +254,19 @@ const downloadCertificate = async (req, res) => {
         const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
         const certDir = path_1.default.join(env_1.config.uploadDir, 'generated');
         const filePath = path_1.default.join(certDir, `cert-${safeName}.${format}`);
-        if (!fs_1.default.existsSync(filePath)) {
-            // Fayl yo'q bo'lsa qayta generatsiya
-            const pngPath = path_1.default.join(certDir, `cert-${safeName}.png`);
-            const pdfPath = path_1.default.join(certDir, `cert-${safeName}.pdf`);
-            if (!fs_1.default.existsSync(certDir))
-                fs_1.default.mkdirSync(certDir, { recursive: true });
-            await (0, certificate_generator_1.generateCertificateImage)({
-                fullName: cert.full_name,
-                courseName: cert.course_name,
-                courseDescription: cert.course_description || '',
-                courseEndDate: cert.course_end_date,
-                serialNumber: cert.serial_number,
-            }, pngPath);
-            if (format === 'pdf') {
-                await (0, certificate_generator_1.convertPngToPdf)(pngPath, pdfPath);
-            }
-        }
+        const pngPath = path_1.default.join(certDir, `cert-${safeName}.png`);
+        const pdfPath = path_1.default.join(certDir, `cert-${safeName}.pdf`);
+        if (!fs_1.default.existsSync(certDir))
+            fs_1.default.mkdirSync(certDir, { recursive: true });
+        // Always regenerate to apply font/style fixes
+        await (0, certificate_generator_1.generateCertificateImage)({
+            fullName: cert.full_name,
+            courseName: cert.course_name,
+            courseDescription: cert.course_description || '',
+            courseEndDate: cert.course_end_date,
+            serialNumber: cert.serial_number,
+        }, pngPath);
+        await (0, certificate_generator_1.convertPngToPdf)(pngPath, pdfPath);
         const mimeType = format === 'pdf' ? 'application/pdf' : 'image/png';
         res.setHeader('Content-Disposition', `attachment; filename="${cert.serial_number}.${format}"`);
         res.setHeader('Content-Type', mimeType);
@@ -415,9 +411,28 @@ const reissueCertificate = async (req, res) => {
         }
         // Yangi QR kod qayta yaratish
         const qrCodeUrl = await generateQRCode(cert.serial_number);
+        // Qayta generatsiya qilish
+        const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
+        const certDir = path_1.default.join(env_1.config.uploadDir, 'generated');
+        const pngPath = path_1.default.join(certDir, `cert-${safeName}.png`);
+        const pdfPath = path_1.default.join(certDir, `cert-${safeName}.pdf`);
+        if (!fs_1.default.existsSync(certDir))
+            fs_1.default.mkdirSync(certDir, { recursive: true });
+        await (0, certificate_generator_1.generateCertificateImage)({
+            fullName: cert.full_name,
+            courseName: cert.course_name,
+            courseDescription: cert.course_description || '',
+            courseEndDate: cert.course_end_date,
+            serialNumber: cert.serial_number,
+        }, pngPath);
+        await (0, certificate_generator_1.convertPngToPdf)(pngPath, pdfPath);
         const updated = await database_1.prisma.certificate.update({
             where: { id: req.params.id },
-            data: { qr_code_url: qrCodeUrl, status: 'active' },
+            data: {
+                qr_code_url: qrCodeUrl,
+                file_url: `/uploads/generated/cert-${safeName}.pdf`,
+                status: 'active'
+            },
         });
         await database_1.prisma.auditLog.create({
             data: {
@@ -429,7 +444,8 @@ const reissueCertificate = async (req, res) => {
         });
         res.json({ success: true, data: updated, message: 'Sertifikat qayta chiqarildi' });
     }
-    catch {
+    catch (err) {
+        console.error(err);
         res.status(500).json({ success: false, message: 'Server xatosi' });
     }
 };
