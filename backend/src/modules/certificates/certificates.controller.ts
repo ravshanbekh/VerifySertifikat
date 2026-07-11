@@ -426,7 +426,14 @@ export const uploadCertificate = async (req: AuthRequest, res: Response): Promis
 // Admin: sertifikatni tahrirlash
 export const updateCertificate = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { full_name, course_name, course_description, course_start_date, course_end_date } = req.body;
+    const {
+      full_name,
+      course_name,
+      course_description,
+      course_start_date,
+      course_end_date,
+      serial_number,
+    } = req.body;
 
     const cert = await prisma.certificate.findUnique({ where: { id: req.params.id as string } });
     if (!cert) {
@@ -438,6 +445,27 @@ export const updateCertificate = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
+    let updatedSerialNumber = cert.serial_number;
+    let updatedQrCodeUrl = cert.qr_code_url;
+    let updatedSerialSeries = cert.serial_series;
+
+    if (serial_number && serial_number !== cert.serial_number) {
+      // Unikallikni tekshirish
+      const existing = await prisma.certificate.findUnique({ where: { serial_number } });
+      if (existing) {
+        res.status(400).json({ success: false, message: 'Bu seriya raqam allaqachon mavjud' });
+        return;
+      }
+      updatedSerialNumber = serial_number;
+      // Yangi QR kod generatsiya qilish
+      updatedQrCodeUrl = await generateQRCode(serial_number);
+      // Seriya prefiksini aniqlash (birinchi so'z)
+      const parts = serial_number.split(' ');
+      if (parts.length > 0) {
+        updatedSerialSeries = parts[0];
+      }
+    }
+
     const updated = await prisma.certificate.update({
       where: { id: req.params.id as string },
       data: {
@@ -446,6 +474,9 @@ export const updateCertificate = async (req: AuthRequest, res: Response): Promis
         ...(course_description !== undefined && { course_description }),
         ...(course_start_date && { course_start_date: new Date(course_start_date) }),
         ...(course_end_date && { course_end_date: new Date(course_end_date) }),
+        serial_number: updatedSerialNumber,
+        qr_code_url: updatedQrCodeUrl,
+        serial_series: updatedSerialSeries,
       },
     });
 

@@ -18,6 +18,7 @@ export default function EditCertificatePage() {
     course_description: "",
     course_start_date: "",
     course_end_date: "",
+    serial_number: "",
   });
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function EditCertificatePage() {
           course_description: c.course_description || "",
           course_start_date: c.course_start_date.split("T")[0],
           course_end_date: c.course_end_date.split("T")[0],
+          serial_number: c.serial_number,
         });
       })
       .catch(() => {
@@ -79,6 +81,18 @@ export default function EditCertificatePage() {
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm dark:shadow-none rounded-3xl p-8 animate-slide-up stagger-2">
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">
+              Seriya raqami <span className="text-slate-400 dark:text-slate-500 font-medium">(Tahrirlash mumkin)</span>
+            </label>
+            <input
+              value={form.serial_number}
+              onChange={(e) => setForm({ ...form, serial_number: e.target.value })}
+              required
+              className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-mono font-medium"
+            />
+          </div>
+
           <div>
             <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">
               Talaba F.I.Sh <span className="text-red-500">*</span>

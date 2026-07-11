@@ -359,7 +359,7 @@ exports.uploadCertificate = uploadCertificate;
 // Admin: sertifikatni tahrirlash
 const updateCertificate = async (req, res) => {
     try {
-        const { full_name, course_name, course_description, course_start_date, course_end_date } = req.body;
+        const { full_name, course_name, course_description, course_start_date, course_end_date, serial_number, } = req.body;
         const cert = await database_1.prisma.certificate.findUnique({ where: { id: req.params.id } });
         if (!cert) {
             res.status(404).json({ success: false, message: 'Topilmadi' });
@@ -369,6 +369,25 @@ const updateCertificate = async (req, res) => {
             res.status(400).json({ success: false, message: 'Bekor qilingan sertifikatni tahrirlash mumkin emas' });
             return;
         }
+        let updatedSerialNumber = cert.serial_number;
+        let updatedQrCodeUrl = cert.qr_code_url;
+        let updatedSerialSeries = cert.serial_series;
+        if (serial_number && serial_number !== cert.serial_number) {
+            // Unikallikni tekshirish
+            const existing = await database_1.prisma.certificate.findUnique({ where: { serial_number } });
+            if (existing) {
+                res.status(400).json({ success: false, message: 'Bu seriya raqam allaqachon mavjud' });
+                return;
+            }
+            updatedSerialNumber = serial_number;
+            // Yangi QR kod generatsiya qilish
+            updatedQrCodeUrl = await generateQRCode(serial_number);
+            // Seriya prefiksini aniqlash (birinchi so'z)
+            const parts = serial_number.split(' ');
+            if (parts.length > 0) {
+                updatedSerialSeries = parts[0];
+            }
+        }
         const updated = await database_1.prisma.certificate.update({
             where: { id: req.params.id },
             data: {
@@ -377,6 +396,9 @@ const updateCertificate = async (req, res) => {
                 ...(course_description !== undefined && { course_description }),
                 ...(course_start_date && { course_start_date: new Date(course_start_date) }),
                 ...(course_end_date && { course_end_date: new Date(course_end_date) }),
+                serial_number: updatedSerialNumber,
+                qr_code_url: updatedQrCodeUrl,
+                serial_series: updatedSerialSeries,
             },
         });
         await database_1.prisma.auditLog.create({
