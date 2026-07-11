@@ -37,7 +37,7 @@ const COURSE_LIST = [
     name: "Backend dasturlash",
     prefix: "BE",
     description:
-      "Backend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Backend dasturlash\" o'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+      "Backend Dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Backend dasturlash\" o'quv kursini muvaffaqiyatli tamomlab, PHP va Laravel freymvorki asosida zamonaviy veb-ilovalarni loyihalash va ishlab chiqish, MySQL ma'lumotlar bazasini boshqarish, REST API bilan integratsiya qilish, Composer orqali paketlarni boshqarish, Ospanel server muhitida loyihalarni sozlash hamda dasturiy mahsulotlarni ishlab chiqish bo'yicha professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
     name: "Kompyuter savodxonligi",
