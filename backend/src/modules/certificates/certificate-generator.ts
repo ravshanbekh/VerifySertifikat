@@ -129,9 +129,30 @@ export async function generateCertificateImage(
       let lineContent = he(line);
       
       // Birinchi qator boshidagi kurs nomini qalin (bold) qilish
-      if (i === 0 && line.startsWith(courseName)) {
-        const rest = line.substring(courseName.length);
-        lineContent = `<tspan font-weight="700">${he(courseName)}</tspan>${he(rest)}`;
+      if (i === 0) {
+        let boldText = '';
+        let restText = line;
+
+        // 1. Agar " kursini" bo'lsa, undan oldingi qismni bold qilamiz
+        const kursiniIndex = line.indexOf(' kursini');
+        if (kursiniIndex !== -1) {
+          boldText = line.substring(0, kursiniIndex);
+          restText = line.substring(kursiniIndex);
+        } else {
+          // 2. Aks holda, birinchi 2 ta so'zni bold qilamiz
+          const words = line.split(' ');
+          if (words.length >= 2) {
+            boldText = words.slice(0, 2).join(' ');
+            restText = ' ' + words.slice(2).join(' ');
+          } else {
+            boldText = words[0] || '';
+            restText = words.slice(1).join(' ');
+          }
+        }
+
+        if (boldText) {
+          lineContent = `<tspan font-weight="700">${he(boldText)}</tspan>${he(restText)}`;
+        }
       }
       
       return `<text x="${descX}" y="${y}" font-size="${descFontSize}" fill="#00182C" font-family="Noto Sans" font-weight="400">${lineContent}</text>`;
