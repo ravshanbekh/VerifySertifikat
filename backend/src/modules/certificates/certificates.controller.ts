@@ -7,18 +7,34 @@ import fs from 'fs';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { generateCertificateImage, convertPngToPdf, COURSE_SERIES_MAP } from './certificate-generator';
 
-// Serial raqam generatsiya (eng oxirgi raqamga 1 qo'shib davom ettirish)
-const generateSerialNumber = async (series: string): Promise<string> => {
+// Serial raqam generatsiya (KK-F-YYMM-NNN formatida)
+const generateSerialNumber = async (
+  courseCode: string,
+  branchCode: string,
+  signingDateStr?: string
+): Promise<string> => {
+  const date = signingDateStr ? new Date(signingDateStr) : new Date();
+  const yy = String(date.getFullYear()).slice(-2);
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const prefix = `${courseCode}-${branchCode}-${yy}${mm}`;
+
+  // Ma'lumotlar bazasidan ushbu prefiks bilan boshlanadigan oxirgi sertifikatni qidirish
   const latestCert = await prisma.certificate.findFirst({
-    where: { serial_series: series },
-    orderBy: { serial_number: 'desc' },
+    where: {
+      serial_number: {
+        startsWith: `${prefix}-`,
+      },
+    },
+    orderBy: {
+      serial_number: 'desc',
+    },
   });
 
   let nextNum = 1;
   if (latestCert) {
     const parts = latestCert.serial_number.split('-');
-    if (parts.length > 1) {
-      const lastPart = parts[parts.length - 1];
+    if (parts.length === 4) {
+      const lastPart = parts[3];
       const numPart = parseInt(lastPart, 10);
       if (!isNaN(numPart)) {
         nextNum = numPart + 1;
@@ -26,8 +42,8 @@ const generateSerialNumber = async (series: string): Promise<string> => {
     }
   }
 
-  const num = String(nextNum).padStart(8, '0');
-  return `${series}-${num}`;
+  const nnn = String(nextNum).padStart(3, '0');
+  return `${prefix}-${nnn}`;
 };
 
 // Kurs nomidan seriya prefiksini aniqlash
@@ -203,6 +219,9 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
       course_description,
       course_start_date,
       course_end_date,
+      branch_code,
+      course_code,
+      signing_date,
     } = req.body;
 
     if (!full_name || !course_name || !course_start_date || !course_end_date) {
@@ -210,14 +229,17 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
-    // Kurs nomiga qarab seriya prefiksi
-    const serial_series = getSeriesFromCourse(course_name);
+    // Kurs nomiga qarab seriya prefiksi (KK)
+    const finalCourseCode = course_code || getSeriesFromCourse(course_name);
+    const finalBranchCode = branch_code || '1';
+    const finalSigningDate = signing_date || course_start_date || new Date().toISOString();
+    
     const finalDescription = getDescriptionFromCourse(course_name, course_description);
 
     // Serial raqam
     let serialNumber = customSerial;
     if (!serialNumber) {
-      serialNumber = await generateSerialNumber(serial_series);
+      serialNumber = await generateSerialNumber(finalCourseCode, finalBranchCode, finalSigningDate);
     }
 
     // Mavjudligini tekshirish
@@ -251,7 +273,7 @@ export const createCertificate = async (req: AuthRequest, res: Response): Promis
 
     const cert = await prisma.certificate.create({
       data: {
-        serial_series,
+        serial_series: finalCourseCode,
         serial_number: serialNumber,
         full_name,
         course_name,
@@ -338,13 +360,16 @@ export const uploadCertificate = async (req: AuthRequest, res: Response): Promis
     }
 
     const {
-      serial_series = 'ITLA',
+      serial_series: customSeries,
       serial_number: customSerial,
       full_name,
       course_name,
       course_description,
       course_start_date,
       course_end_date,
+      branch_code,
+      course_code,
+      signing_date,
     } = req.body;
 
     if (!full_name || !course_name || !course_start_date || !course_end_date) {
@@ -352,9 +377,13 @@ export const uploadCertificate = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
+    const finalCourseCode = course_code || customSeries || getSeriesFromCourse(course_name);
+    const finalBranchCode = branch_code || '1';
+    const finalSigningDate = signing_date || course_start_date || new Date().toISOString();
+
     let serialNumber = customSerial;
     if (!serialNumber) {
-      serialNumber = await generateSerialNumber(serial_series);
+      serialNumber = await generateSerialNumber(finalCourseCode, finalBranchCode, finalSigningDate);
     }
 
     const existing = await prisma.certificate.findUnique({ where: { serial_number: serialNumber } });
@@ -368,7 +397,7 @@ export const uploadCertificate = async (req: AuthRequest, res: Response): Promis
 
     const cert = await prisma.certificate.create({
       data: {
-        serial_series,
+        serial_series: finalCourseCode,
         serial_number: serialNumber,
         full_name,
         course_name,

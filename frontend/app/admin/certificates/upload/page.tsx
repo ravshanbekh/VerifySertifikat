@@ -14,13 +14,15 @@ export default function UploadCertificatePage() {
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [form, setForm] = useState({
-    serial_series: "ITLA",
+    serial_series: "FE",
     serial_number: "",
     full_name: "",
     course_name: "",
     course_description: "",
     course_start_date: "",
     course_end_date: "",
+    branch_code: "1", // Xalqlar do'stligi default
+    signing_date: new Date().toISOString().split("T")[0], // Bugungi sana default
   });
 
   const handleFile = (f: File) => {
@@ -62,6 +64,8 @@ export default function UploadCertificatePage() {
       if (form.course_description) formData.append("course_description", form.course_description);
       formData.append("course_start_date", form.course_start_date);
       formData.append("course_end_date", form.course_end_date);
+      formData.append("branch_code", form.branch_code);
+      formData.append("signing_date", form.signing_date);
 
       await certificateApi.upload(formData);
       toast.success("Sertifikat muvaffaqiyatli yuklandi!");
@@ -145,23 +149,50 @@ export default function UploadCertificatePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">Seriya</label>
+              <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">Seriya prefiksi / Kurs kodi <span className="text-slate-400 dark:text-slate-500 font-medium">(Masalan: FE)</span></label>
               <input
                 value={form.serial_series}
                 onChange={(e) => setForm({ ...form, serial_series: e.target.value.toUpperCase() })}
+                placeholder="FE"
                 className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
               />
             </div>
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">Raqam <span className="text-slate-400 dark:text-slate-500 font-medium">(ixtiyoriy)</span></label>
+              <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">To&apos;liq Seriya Raqami <span className="text-slate-400 dark:text-slate-500 font-medium">(Qo&apos;lda kiritish — ixtiyoriy)</span></label>
               <input
                 value={form.serial_number}
                 onChange={(e) => setForm({ ...form, serial_number: e.target.value })}
-                placeholder="ITLA-000001"
+                placeholder="FE-1-2607-001"
                 className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-mono"
               />
             </div>
           </div>
+
+          {!form.serial_number && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-800/50">
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 text-xs font-bold mb-1.5">Filial (Raqam shakllanishi uchun)</label>
+                <select
+                  value={form.branch_code}
+                  onChange={(e) => setForm({ ...form, branch_code: e.target.value })}
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 transition-all font-medium"
+                >
+                  <option value="0">Sayxun filiali (0)</option>
+                  <option value="1">Xalqlar do&apos;stligi filiali (1)</option>
+                  <option value="2">Guliston tumani filiali (2)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-slate-700 dark:text-slate-300 text-xs font-bold mb-1.5">Tuzilgan sana (YYMM uchun)</label>
+                <input
+                  type="date"
+                  value={form.signing_date}
+                  onChange={(e) => setForm({ ...form, signing_date: e.target.value })}
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-3 py-2 text-sm outline-none focus:border-blue-500 transition-all font-medium"
+                />
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">F.I.Sh <span className="text-red-500">*</span></label>

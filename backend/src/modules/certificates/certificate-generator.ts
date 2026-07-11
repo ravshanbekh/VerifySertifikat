@@ -11,19 +11,39 @@ const FONTS_DIR = path.join(ASSETS_DIR, 'fonts');
 export const COURSE_SERIES_MAP: Record<string, { prefix: string; description: string }> = {
   'Kiberxavfsizlik': {
     prefix: 'KB',
-    description: 'Kiberxavfsizlik kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Kiberxavfsizlik" o\'quv kursini muvaffaqiyatli tamomlab, axborot xavfsizligi tamoyillari, tarmoq va tizimlar xavfsizligi, zararli dasturlar va kiberhujumlardan himoyalanish, xavfsiz autentifikatsiya, ma\'lumotlarni himoyalash, xavflarni boshqarish hamda zamonaviy kiberxavfsizlik amaliyotlari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.',
+    description: 'Kiberxavfsizlik kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Kiberxavfsizlik" o\'quv kursini muvaffaqiyatli tamomlab, axborot xavfsizligi tamoyillari, tarmoq va tizimlar xavfsizligi, zararli dasturlar va kiberhujumlardan himoyalanish, xavfsiz autentifikatsiya, ma\'lumotlarni himoyalash, xavflarni boshqarish hamda zamonaviy kiberxavfsizlik amaliyotlari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'Frontend': {
+    prefix: 'FE',
+    description: 'Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend Development" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Frontend Development': {
-    prefix: 'FR',
-    description: 'Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend Development" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.',
+    prefix: 'FE',
+    description: 'Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend Development" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'Backend': {
+    prefix: 'BE',
+    description: 'Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend Development" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Backend Development': {
-    prefix: 'BC',
-    description: 'Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend Development" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.',
+    prefix: 'BE',
+    description: 'Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend Development" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Kompyuter savodxonligi': {
     prefix: 'KS',
-    description: 'Kompyuter savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Kompyuter savodxonligi" o\'quv kursini muvaffaqiyatli tamomlab, kompyuter asoslari, ofis dasturlari, internet xavfsizligi va axborot texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.',
+    description: 'Kompyuter savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Kompyuter savodxonligi" o\'quv kursini muvaffaqiyatli tamomlab, kompyuter asoslari, ofis dasturlari, internet xavfsizligi va axborot texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'IT Kids': {
+    prefix: 'IK',
+    description: 'IT Kids kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "IT Kids" o\'quv kursini muvaffaqiyatli tamomlab, boshlang\'ich kompyuter savodxonligi, mantiqiy fikrlash va dasturlash asoslari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'Veb dasturlash': {
+    prefix: 'VD',
+    description: 'Veb dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Veb dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, veb-saytlar va ilovalar yaratish, HTML/CSS, JavaScript, ma\'lumotlar bazalari hamda backend dasturlash bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'Foundation': {
+    prefix: 'FN',
+    description: 'Foundation kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Foundation" o\'quv kursini muvaffaqiyatli tamomlab, dasturlash asoslari, mantiq, algoritmlar va ma\'lumotlar tuzilmalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
 };
 

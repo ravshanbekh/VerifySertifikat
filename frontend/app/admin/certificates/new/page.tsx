@@ -10,30 +10,56 @@ import Link from "next/link";
 // Kurs yo'nalishlari (backend bilan mos)
 const COURSE_LIST = [
   {
-    name: "Kiberxavfsizlik",
-    prefix: "KB",
+    name: "IT Kids",
+    prefix: "IK",
     description:
-      "Kiberxavfsizlik kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Kiberxavfsizlik\" o'quv kursini muvaffaqiyatli tamomlab, axborot xavfsizligi tamoyillari, tarmoq va tizimlar xavfsizligi, zararli dasturlar va kiberhujumlardan himoyalanish, xavfsiz autentifikatsiya, ma'lumotlarni himoyalash, xavflarni boshqarish hamda zamonaviy kiberxavfsizlik amaliyotlari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.",
+      "IT Kids kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"IT Kids\" o'quv kursini muvaffaqiyatli tamomlab, boshlang'ich kompyuter savodxonligi, mantiqiy fikrlash va dasturlash asoslari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+  },
+  {
+    name: "Veb dasturlash",
+    prefix: "VD",
+    description:
+      "Veb dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Veb dasturlash\" o'quv kursini muvaffaqiyatli tamomlab, veb-saytlar va ilovalar yaratish, HTML/CSS, JavaScript, ma'lumotlar bazalari hamda backend dasturlash bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+  },
+  {
+    name: "Foundation",
+    prefix: "FN",
+    description:
+      "Foundation kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Foundation\" o'quv kursini muvaffaqiyatli tamomlab, dasturlash asoslari, mantiq, algoritmlar va ma'lumotlar tuzilmalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
     name: "Frontend Development",
-    prefix: "FR",
+    prefix: "FE",
     description:
-      "Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Frontend Development\" o'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.",
+      "Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Frontend Development\" o'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
     name: "Backend Development",
-    prefix: "BC",
+    prefix: "BE",
     description:
-      "Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Backend Development\" o'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.",
+      "Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Backend Development\" o'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
     name: "Kompyuter savodxonligi",
     prefix: "KS",
     description:
-      "Kompyuter savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Kompyuter savodxonligi\" o'quv kursini muvaffaqiyatli tamomlab, kompyuter asoslari, ofis dasturlari, internet xavfsizligi va axborot texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlayd i.",
+      "Kompyuter savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Kompyuter savodxonligi\" o'quv kursini muvaffaqiyatli tamomlab, kompyuter asoslari, ofis dasturlari, internet xavfsizligi va axborot texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+  },
+  {
+    name: "Kiberxavfsizlik",
+    prefix: "KB",
+    description:
+      "Kiberxavfsizlik kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Kiberxavfsizlik\" o'quv kursini muvaffaqiyatli tamomlab, axborot xavfsizligi tamoyillari, tarmoq va tizimlar xavfsizligi, zararli dasturlar va kiberhujumlardan himoyalanish, xavfsiz autentifikatsiya, ma'lumotlarni himoyalash, xavflarni boshqarish hamda zamonaviy kiberxavfsizlik amaliyotlari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
 ];
+
+// Filiallar ro'yxati (backend bilan mos)
+const BRANCH_LIST = [
+  { code: "0", name: "Sayxun filiali" },
+  { code: "1", name: "Xalqlar do'stligi filiali" },
+  { code: "2", name: "Guliston tumani filiali" },
+];
+
 
 export default function NewCertificatePage() {
   const router = useRouter();
@@ -44,6 +70,8 @@ export default function NewCertificatePage() {
     course_description: "",
     course_start_date: "",
     course_end_date: "",
+    branch_code: "1", // Xalqlar do'stligi default
+    signing_date: new Date().toISOString().split("T")[0], // Bugungi sana default
   });
 
   const selectedCourse = COURSE_LIST.find((c) => c.name === form.course_name);
@@ -64,7 +92,7 @@ export default function NewCertificatePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.full_name || !form.course_name || !form.course_start_date || !form.course_end_date) {
+    if (!form.full_name || !form.course_name || !form.course_start_date || !form.course_end_date || !form.branch_code || !form.signing_date) {
       toast.error("Barcha majburiy maydonlarni to'ldiring");
       return;
     }
@@ -76,6 +104,9 @@ export default function NewCertificatePage() {
         course_description: form.course_description,
         course_start_date: form.course_start_date,
         course_end_date: form.course_end_date,
+        branch_code: form.branch_code,
+        course_code: selectedCourse?.prefix || "",
+        signing_date: form.signing_date,
       } as Parameters<typeof certificateApi.create>[0]);
       toast.success("Sertifikat muvaffaqiyatli yaratildi!");
       router.push("/admin/certificates");
@@ -107,6 +138,46 @@ export default function NewCertificatePage() {
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-sm dark:shadow-none animate-slide-up stagger-2">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Filial tanlash */}
+          <div>
+            <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">
+              Filial <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {BRANCH_LIST.map((branch) => (
+                <button
+                  key={branch.code}
+                  type="button"
+                  onClick={() => handleChange("branch_code", branch.code)}
+                  className={`flex flex-col items-center justify-center p-3 rounded-2xl border-2 text-center transition-all ${
+                    form.branch_code === branch.code
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-500/10"
+                      : "border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-slate-50 dark:bg-slate-800/50"
+                  }`}
+                >
+                  <div
+                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mb-1.5 ${
+                      form.branch_code === branch.code
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
+                    }`}
+                  >
+                    {branch.code}
+                  </div>
+                  <p
+                    className={`text-xs font-bold leading-tight ${
+                      form.branch_code === branch.code
+                        ? "text-blue-700 dark:text-blue-400"
+                        : "text-slate-700 dark:text-slate-300"
+                    }`}
+                  >
+                    {branch.name}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Kurs tanlash */}
           <div>
             <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">
@@ -144,7 +215,7 @@ export default function NewCertificatePage() {
                       {course.name}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                      Seriya: {course.prefix}-00000001
+                      Seriya: {course.prefix}-{form.branch_code}-{form.signing_date ? form.signing_date.replace(/-/g, "").substring(2, 6) : "YYMM"}-001
                     </p>
                   </div>
                 </button>
@@ -153,7 +224,7 @@ export default function NewCertificatePage() {
             {selectedCourse && (
               <div className="mt-3 flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-900/30 rounded-xl px-3 py-2">
                 <BookOpen className="w-3.5 h-3.5 flex-shrink-0" />
-                Seriya prefiksi <span className="font-black">{selectedCourse.prefix}</span> — raqam avtomatik generatsiya bo&apos;ladi
+                Seriya formati <span className="font-black">{selectedCourse.prefix}-{form.branch_code}-{form.signing_date ? form.signing_date.replace(/-/g, "").substring(2, 6) : "YYMM"}-NNN</span> — raqam avtomatik generatsiya bo&apos;ladi
               </div>
             )}
           </div>
@@ -190,7 +261,19 @@ export default function NewCertificatePage() {
           </div>
 
           {/* Sanalar */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">
+                Tuzilgan sana <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                value={form.signing_date}
+                onChange={(e) => handleChange("signing_date", e.target.value)}
+                required
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+              />
+            </div>
             <div>
               <label className="block text-slate-700 dark:text-slate-300 text-sm font-bold mb-2">
                 Boshlangan sana <span className="text-red-500">*</span>
