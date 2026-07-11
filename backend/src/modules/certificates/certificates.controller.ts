@@ -7,7 +7,7 @@ import fs from 'fs';
 import { AuthRequest } from '../../middleware/auth.middleware';
 import { generateCertificateImage, convertPngToPdf, COURSE_SERIES_MAP } from './certificate-generator';
 
-// Serial raqam generatsiya (KK-F-YYMM-NNN formatida)
+// Serial raqam generatsiya (KK FYYMMNNN formatida, chiziqlarsiz)
 const generateSerialNumber = async (
   courseCode: string,
   branchCode: string,
@@ -16,13 +16,13 @@ const generateSerialNumber = async (
   const date = signingDateStr ? new Date(signingDateStr) : new Date();
   const yy = String(date.getFullYear()).slice(-2);
   const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const prefix = `${courseCode}-${branchCode}-${yy}${mm}`;
+  const prefix = `${courseCode} ${branchCode}${yy}${mm}`;
 
   // Ma'lumotlar bazasidan ushbu prefiks bilan boshlanadigan oxirgi sertifikatni qidirish
   const latestCert = await prisma.certificate.findFirst({
     where: {
       serial_number: {
-        startsWith: `${prefix}-`,
+        startsWith: prefix,
       },
     },
     orderBy: {
@@ -32,18 +32,15 @@ const generateSerialNumber = async (
 
   let nextNum = 1;
   if (latestCert) {
-    const parts = latestCert.serial_number.split('-');
-    if (parts.length === 4) {
-      const lastPart = parts[3];
-      const numPart = parseInt(lastPart, 10);
-      if (!isNaN(numPart)) {
-        nextNum = numPart + 1;
-      }
+    const lastPart = latestCert.serial_number.slice(-3);
+    const numPart = parseInt(lastPart, 10);
+    if (!isNaN(numPart)) {
+      nextNum = numPart + 1;
     }
   }
 
   const nnn = String(nextNum).padStart(3, '0');
-  return `${prefix}-${nnn}`;
+  return `${prefix}${nnn}`;
 };
 
 // Kurs nomidan seriya prefiksini aniqlash

@@ -215,7 +215,7 @@ export default function NewCertificatePage() {
                       {course.name}
                     </p>
                     <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                      Seriya: {course.prefix}-{form.branch_code}-{form.signing_date ? form.signing_date.replace(/-/g, "").substring(2, 6) : "YYMM"}-001
+                      Seriya: {course.prefix} {form.branch_code}{form.signing_date ? form.signing_date.replace(/-/g, "").substring(2, 6) : "YYMM"}001
                     </p>
                   </div>
                 </button>
@@ -224,7 +224,7 @@ export default function NewCertificatePage() {
             {selectedCourse && (
               <div className="mt-3 flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-900/30 rounded-xl px-3 py-2">
                 <BookOpen className="w-3.5 h-3.5 flex-shrink-0" />
-                Seriya formati <span className="font-black">{selectedCourse.prefix}-{form.branch_code}-{form.signing_date ? form.signing_date.replace(/-/g, "").substring(2, 6) : "YYMM"}-NNN</span> — raqam avtomatik generatsiya bo&apos;ladi
+                Seriya formati <span className="font-black">{selectedCourse.prefix} {form.branch_code}{form.signing_date ? form.signing_date.replace(/-/g, "").substring(2, 6) : "YYMM"}NNN</span> — raqam avtomatik generatsiya bo&apos;ladi
               </div>
             )}
           </div>

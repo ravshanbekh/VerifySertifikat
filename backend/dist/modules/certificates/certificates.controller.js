@@ -10,17 +10,17 @@ const qrcode_1 = __importDefault(require("qrcode"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const certificate_generator_1 = require("./certificate-generator");
-// Serial raqam generatsiya (KK-F-YYMM-NNN formatida)
+// Serial raqam generatsiya (KK FYYMMNNN formatida, chiziqlarsiz)
 const generateSerialNumber = async (courseCode, branchCode, signingDateStr) => {
     const date = signingDateStr ? new Date(signingDateStr) : new Date();
     const yy = String(date.getFullYear()).slice(-2);
     const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const prefix = `${courseCode}-${branchCode}-${yy}${mm}`;
+    const prefix = `${courseCode} ${branchCode}${yy}${mm}`;
     // Ma'lumotlar bazasidan ushbu prefiks bilan boshlanadigan oxirgi sertifikatni qidirish
     const latestCert = await database_1.prisma.certificate.findFirst({
         where: {
             serial_number: {
-                startsWith: `${prefix}-`,
+                startsWith: prefix,
             },
         },
         orderBy: {
@@ -29,17 +29,14 @@ const generateSerialNumber = async (courseCode, branchCode, signingDateStr) => {
     });
     let nextNum = 1;
     if (latestCert) {
-        const parts = latestCert.serial_number.split('-');
-        if (parts.length === 4) {
-            const lastPart = parts[3];
-            const numPart = parseInt(lastPart, 10);
-            if (!isNaN(numPart)) {
-                nextNum = numPart + 1;
-            }
+        const lastPart = latestCert.serial_number.slice(-3);
+        const numPart = parseInt(lastPart, 10);
+        if (!isNaN(numPart)) {
+            nextNum = numPart + 1;
         }
     }
     const nnn = String(nextNum).padStart(3, '0');
-    return `${prefix}-${nnn}`;
+    return `${prefix}${nnn}`;
 };
 // Kurs nomidan seriya prefiksini aniqlash
 const getSeriesFromCourse = (courseName) => {
