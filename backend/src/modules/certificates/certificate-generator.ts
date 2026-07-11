@@ -15,19 +15,27 @@ export const COURSE_SERIES_MAP: Record<string, { prefix: string; description: st
   },
   'Frontend': {
     prefix: 'FE',
-    description: 'Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend Development" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+    description: 'Frontend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Frontend Development': {
     prefix: 'FE',
-    description: 'Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend Development" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+    description: 'Frontend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'Frontend dasturlash': {
+    prefix: 'FE',
+    description: 'Frontend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Frontend dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Backend': {
     prefix: 'BE',
-    description: 'Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend Development" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+    description: 'Backend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Backend Development': {
     prefix: 'BE',
-    description: 'Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend Development" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+    description: 'Backend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  'Backend dasturlash': {
+    prefix: 'BE',
+    description: 'Backend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Backend dasturlash" o\'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma\'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
   'Kompyuter savodxonligi': {
     prefix: 'KS',

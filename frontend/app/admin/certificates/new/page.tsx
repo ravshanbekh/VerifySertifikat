@@ -28,16 +28,16 @@ const COURSE_LIST = [
       "Foundation kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Foundation\" o'quv kursini muvaffaqiyatli tamomlab, dasturlash asoslari, mantiq, algoritmlar va ma'lumotlar tuzilmalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
-    name: "Frontend Development",
+    name: "Frontend dasturlash",
     prefix: "FE",
     description:
-      "Frontend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Frontend Development\" o'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+      "Frontend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Frontend dasturlash\" o'quv kursini muvaffaqiyatli tamomlab, HTML, CSS, JavaScript, React va zamonaviy veb-texnologiyalar bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
-    name: "Backend Development",
+    name: "Backend dasturlash",
     prefix: "BE",
     description:
-      "Backend Development kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Backend Development\" o'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+      "Backend dasturlash kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Backend dasturlash\" o'quv kursini muvaffaqiyatli tamomlab, server-side dasturlash, ma'lumotlar bazalari, API yaratish va zamonaviy backend texnologiyalari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
   {
     name: "Kompyuter savodxonligi",
