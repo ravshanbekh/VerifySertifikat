@@ -208,6 +208,34 @@ function HomeContent() {
   );
 }
 
+function DescriptionRow({ value }: { value: string }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const isLong = value.length > 150;
+  const displayedValue = expanded || !isLong ? value : value.substring(0, 150) + "...";
+
+  return (
+    <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 rounded-2xl p-5 hover:border-slate-200 dark:hover:border-slate-700 transition-colors md:col-span-2">
+      <div className="flex items-center gap-2 mb-2">
+        <FileText className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+        <span className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">Kurs tavsifi</span>
+      </div>
+      <p className="text-slate-600 dark:text-slate-350 font-medium text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+        {displayedValue}
+      </p>
+      {isLong && (
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="mt-3 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-500 font-bold transition-colors cursor-pointer"
+        >
+          {expanded ? "Yashirish" : "Batafsil..."}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function CertificateDetails({
   data,
   formatDate,
@@ -220,11 +248,11 @@ function CertificateDetails({
       <InfoRow icon={User} label="Talaba" value={data.full_name} />
       <InfoRow icon={FileText} label="Seriya raqami" value={data.serial_number} mono />
       <InfoRow icon={FileText} label="Kurs nomi" value={data.course_name} />
-      {data.course_description && (
-        <InfoRow icon={FileText} label="Kurs tavsifi" value={data.course_description} />
-      )}
       <InfoRow icon={Calendar} label="Boshlangan" value={formatDate(data.course_start_date)} />
       <InfoRow icon={Calendar} label="Tugagan" value={formatDate(data.course_end_date)} />
+      {data.course_description && (
+        <DescriptionRow value={data.course_description} />
+      )}
       {data.file_url && (
         <div className="md:col-span-2 mt-4">
           <a
