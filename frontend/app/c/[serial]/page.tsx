@@ -9,7 +9,7 @@ export default function CertRedirectPage() {
 
   useEffect(() => {
     if (serial) {
-      router.replace(`/?q=${encodeURIComponent(serial)}`);
+      router.replace(`/?q=${serial}`);
     }
   }, [serial, router]);
 

@@ -97,12 +97,42 @@ const generateCertificateFiles = async (
   };
 };
 
+const getQueryVariants = (input: string): string[] => {
+  const trimmed = input.trim().toUpperCase();
+  const variants = new Set<string>([trimmed]);
+
+  // Hamma probel va chiziqlarni olib tashlaymiz
+  const clean = trimmed.replace(/[\s-]/g, '');
+  variants.add(clean);
+
+  // Agar clean "BE02606011" formatida bo'lsa (2 ta harf + 8 ta raqam), probel bilan formatlaymiz: "BE 02606011"
+  if (/^[A-Z]{2}\d{8}$/.test(clean)) {
+    const course = clean.slice(0, 2);
+    const rest = clean.slice(2);
+    variants.add(`${course} ${rest}`);
+
+    // Qadimgi chiziqli formatni ham qo'llab-quvvatlash uchun (masalan: FE-1-2607-001)
+    const branch = clean.slice(2, 3);
+    const yymm = clean.slice(3, 7);
+    const nnn = clean.slice(7);
+    variants.add(`${course}-${branch}-${yymm}-${nnn}`);
+  }
+
+  return Array.from(variants);
+};
+
 // Public: sertifikatni tekshirish
 export const verifyCertificate = async (req: Request, res: Response): Promise<void> => {
   try {
     const { serialNumber } = req.params;
-    const cert = await prisma.certificate.findUnique({
-      where: { serial_number: serialNumber as string },
+    const searchVariants = getQueryVariants(serialNumber as string);
+
+    const cert = await prisma.certificate.findFirst({
+      where: {
+        serial_number: {
+          in: searchVariants,
+        },
+      },
       select: {
         id: true,
         serial_series: true,
