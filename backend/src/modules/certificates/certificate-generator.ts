@@ -53,6 +53,15 @@ export const COURSE_SERIES_MAP: Record<string, { prefix: string; description: st
     prefix: 'FN',
     description: 'Foundation kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Foundation" o\'quv kursini muvaffaqiyatli tamomlab, dasturlash asoslari, mantiq, algoritmlar va ma\'lumotlar tuzilmalari bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
   },
+  'Sun\'iy intelekt savodxonligi': {
+    prefix: 'AI',
+    description: 'Sun\'iy intelekt savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Sun\'iy intelekt savodxonligi" o\'quv kursini muvaffaqiyatli tamomlab, sun\'iy intelekt asoslari va tarixi, mashinaviy o\'qitish tamoyillari, ChatGPT va boshqa yirik til modellari bilan ishlash, AI vositalarini kundalik va kasbiy faoliyatda qo\'llash, generativ AI orqali matn, tasvir va kod yaratish, etika va axborot xavfsizligi bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
+  // Online kurslar (online format)
+  'Sun\'iy intelekt savodxonligi online': {
+    prefix: 'AI',
+    description: 'Sun\'iy intelekt savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi "Sun\'iy intelekt savodxonligi" o\'quv kursini muvaffaqiyatli tamomlab, sun\'iy intelekt asoslari va tarixi, mashinaviy o\'qitish tamoyillari, ChatGPT va boshqa yirik til modellari bilan ishlash, AI vositalarini kundalik va kasbiy faoliyatda qo\'llash, generativ AI orqali matn, tasvir va kod yaratish, etika va axborot xavfsizligi bo\'yicha nazariy bilim, amaliy ko\'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.',
+  },
 };
 
 // Matnni chiziqqa bo'lib qo'yish (word wrap)

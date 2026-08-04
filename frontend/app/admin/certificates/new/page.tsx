@@ -51,6 +51,12 @@ const COURSE_LIST = [
     description:
       "Kiberxavfsizlik kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Kiberxavfsizlik\" o'quv kursini muvaffaqiyatli tamomlab, axborot xavfsizligi tamoyillari, tarmoq va tizimlar xavfsizligi, zararli dasturlar va kiberhujumlardan himoyalanish, xavfsiz autentifikatsiya, ma'lumotlarni himoyalash, xavflarni boshqarish hamda zamonaviy kiberxavfsizlik amaliyotlari bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
   },
+  {
+    name: "Sun'iy intelekt savodxonligi",
+    prefix: "AI",
+    description:
+      "Sun'iy intelekt savodxonligi kursini muvaffaqiyatli tamomlaganligi uchun ushbu sertifikat bilan taqdirlanadi.\nMazkur sertifikat egasi \"Sun'iy intelekt savodxonligi\" o'quv kursini muvaffaqiyatli tamomlab, sun'iy intelekt asoslari va tarixi, mashinaviy o'qitish tamoyillari, ChatGPT va boshqa yirik til modellari bilan ishlash, AI vositalarini kundalik va kasbiy faoliyatda qo'llash, generativ AI orqali matn, tasvir va kod yaratish, etika va axborot xavfsizligi bo'yicha nazariy bilim, amaliy ko'nikma va professional kompetensiyalarni egallaganligini tasdiqlaydi.",
+  },
 ];
 
 // Filiallar ro'yxati (backend bilan mos)
