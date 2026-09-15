@@ -52,7 +52,11 @@ docker compose run --rm backend npx prisma migrate deploy
 docker compose up -d --remove-orphans postgres backend frontend nginx
 
 for attempt in {1..30}; do
+  VERIFY_LOGIN_PROBE="$(curl -sS -o /dev/null -w '%{http_code} %{content_type}' \
+    -H 'Host: verify.itlive.uz' -H 'Content-Type: application/json' \
+    --data '{}' http://127.0.0.1:8085/api/auth/login || true)"
   if docker compose exec -T backend wget -qO- http://127.0.0.1:4000/health >/dev/null \
+    && [[ "$VERIFY_LOGIN_PROBE" == 400\ application/json* ]] \
     && curl -fsS -H 'Host: career.itlive.uz' http://127.0.0.1:8085/career/candidates >/dev/null \
     && curl -fsS -H 'Host: career.itlive.uz' http://127.0.0.1:8085/api/career/v1/summary >/dev/null; then
     trap - EXIT
