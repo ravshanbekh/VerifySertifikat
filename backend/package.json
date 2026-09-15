@@ -10,7 +10,10 @@
     "seed": "node dist/seed.js",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:career": "npm run build && node scripts/career-test.cjs",
+    "career:setup": "node scripts/career-dev.cjs",
+    "career:preview": "npm run build && node scripts/career-preview.cjs"
   },
   "keywords": [],
   "author": "",

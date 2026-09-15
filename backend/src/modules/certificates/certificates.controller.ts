@@ -624,6 +624,13 @@ export const deleteCertificate = async (req: AuthRequest, res: Response): Promis
       return;
     }
 
+    // Career depends on this certificate. Check before removing any files.
+    const careerProfile = await prisma.careerProfile.findUnique({ where: { certificate_id: cert.id }, select: { id: true } });
+    if (careerProfile) {
+      res.status(409).json({ success: false, message: 'Sertifikat Career profiliga bog‘langan. O‘chirish o‘rniga bekor qilishdan foydalaning.' });
+      return;
+    }
+
     // Fayllarni o'chirish
     const safeName = cert.serial_number.replace(/[^a-zA-Z0-9]/g, '-');
     const certDir = path.join(config.uploadDir, 'generated');

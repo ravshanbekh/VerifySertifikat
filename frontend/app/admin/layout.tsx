@@ -12,40 +12,82 @@ import {
   Users,
   ScrollText,
   LogOut,
-  CheckCircle,
+  BriefcaseBusiness,
   Menu,
   X,
 } from "lucide-react";
 
-const navItems = [
-  { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["operator", "super_admin"] },
-  { href: "/admin/certificates", label: "Sertifikatlar", icon: FileText, roles: ["operator", "super_admin"] },
-  { href: "/admin/users", label: "Xodimlar", icon: Users, roles: ["super_admin"] },
-  { href: "/admin/audit", label: "Audit Log", icon: ScrollText, roles: ["super_admin"] },
+const navGroups = [
+  {
+    label: "Umumiy boshqaruv",
+    items: [
+      {
+        href: "/admin/dashboard",
+        label: "Umumiy dashboard",
+        icon: LayoutDashboard,
+        roles: ["operator", "super_admin"],
+      },
+    ],
+  },
+  {
+    label: "Sertifikat tizimi",
+    items: [
+      {
+        href: "/admin/certificates",
+        label: "Sertifikatlar",
+        icon: FileText,
+        roles: ["operator", "super_admin"],
+      },
+      {
+        href: "/admin/users",
+        label: "Xodimlar",
+        icon: Users,
+        roles: ["super_admin"],
+      },
+      {
+        href: "/admin/audit",
+        label: "Sertifikat auditi",
+        icon: ScrollText,
+        roles: ["super_admin"],
+      },
+    ],
+  },
+  {
+    label: "Career platformasi",
+    items: [
+      {
+        href: "/admin/career",
+        label: "Career boshqaruvi",
+        icon: BriefcaseBusiness,
+        roles: ["super_admin"],
+      },
+    ],
+  },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [checking, setChecking] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
   // Login sahifasini layout'dan chiqaramiz
   const isLoginPage = pathname === "/admin/login";
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(!isLoginPage);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (isLoginPage) {
-      setChecking(false);
-      return;
-    }
+    if (isLoginPage) return;
     const token = localStorage.getItem("access_token");
     if (!token) {
       router.push("/admin/login");
-      setChecking(false);
       return;
     }
-    authApi.getMe()
+    authApi
+      .getMe()
       .then((res) => setUser(res.data))
       .catch(() => {
         localStorage.removeItem("access_token");
@@ -73,7 +115,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push("/admin/login");
   };
 
-  const filteredNav = navItems.filter((item) => item.roles.includes(user.role));
+  const filteredGroups = navGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.roles.includes(user.role)),
+    }))
+    .filter((group) => group.items.length > 0);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex transition-colors">
@@ -94,35 +141,66 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Logo */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center">
-            <Image src="/logo-dark.svg" alt="ITLive Logo" width={110} height={36} className="object-contain block dark:hidden" priority />
-            <Image src="/logo.svg" alt="ITLive Logo" width={110} height={36} className="object-contain hidden dark:block" priority />
+            <Image
+              src="/logo-dark.svg"
+              alt="ITLive Logo"
+              width={110}
+              height={36}
+              className="object-contain block dark:hidden"
+              priority
+            />
+            <Image
+              src="/logo.svg"
+              alt="ITLive Logo"
+              width={110}
+              height={36}
+              className="object-contain hidden dark:block"
+              priority
+            />
           </div>
           {/* Mobile Close Btn */}
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-          {filteredNav.map((item, index) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all animate-slide-in-right stagger-${index + 1} ${
-                  active
-                    ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 shadow-sm shadow-blue-100 dark:shadow-none"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                }`}
-              >
-                <item.icon className={`w-5 h-5 flex-shrink-0 ${active ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`} />
-                {item.label}
-              </Link>
-            );
-          })}
+        <nav
+          className="flex-1 p-4 space-y-6 overflow-y-auto"
+          aria-label="Admin bo‘limlari"
+        >
+          {filteredGroups.map((group) => (
+            <section key={group.label} aria-label={group.label}>
+              <p className="px-4 mb-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                {group.label}
+              </p>
+              <div className="space-y-1.5">
+                {group.items.map((item) => {
+                  const active = pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                        active
+                          ? "bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 shadow-sm shadow-blue-100 dark:shadow-none"
+                          : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                      }`}
+                    >
+                      <item.icon
+                        className={`w-5 h-5 flex-shrink-0 ${active ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`}
+                      />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
         </nav>
 
         {/* User */}
@@ -132,14 +210,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {user.full_name[0]}
             </div>
             <div className="overflow-hidden">
-              <p className="text-slate-900 dark:text-white text-sm font-bold truncate">{user.full_name}</p>
+              <p className="text-slate-900 dark:text-white text-sm font-bold truncate">
+                {user.full_name}
+              </p>
               <p className="text-slate-500 dark:text-slate-400 text-xs font-medium capitalize">
                 {user.role === "super_admin" ? "Super Admin" : "Operator"}
               </p>
             </div>
           </div>
           <div className="flex items-center justify-between px-2 mb-4">
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Mavzu</span>
+            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+              Mavzu
+            </span>
             <ThemeToggle />
           </div>
           <button
@@ -157,17 +239,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Mobile header */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white p-1">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white p-1"
+            >
               <Menu className="w-6 h-6" />
             </button>
-            <span className="text-slate-900 dark:text-white font-bold">Admin Panel</span>
+            <span className="text-slate-900 dark:text-white font-bold">
+              Admin Panel
+            </span>
           </div>
           <ThemeToggle />
         </div>
         <main className="flex-1 p-6 md:p-8 overflow-y-auto bg-slate-50 dark:bg-slate-950">
-          <div className="max-w-6xl mx-auto animate-fade-in">
-            {children}
-          </div>
+          <div className="max-w-6xl mx-auto animate-fade-in">{children}</div>
         </main>
       </div>
     </div>

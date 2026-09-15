@@ -33,10 +33,12 @@ services:
       JWT_REFRESH_EXPIRES_IN: 7d
       BASE_URL: ${BASE_URL:-https://verify.itlive.uz}
       FRONTEND_URL: ${FRONTEND_URL:-https://verify.itlive.uz}
+      CAREER_URL: ${CAREER_URL:-https://career.itlive.uz}
       NODE_ENV: production
       PORT: 4000
     volumes:
       - uploads_data:/app/uploads
+      - career_private:/app/private-career
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,6 +66,7 @@ services:
       - "8085:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/career.conf:/etc/nginx/conf.d/career.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - certbot_www:/var/www/certbot:ro
       - certbot_conf:/etc/letsencrypt:ro
@@ -88,5 +91,6 @@ networks:
 volumes:
   postgres_data:
   uploads_data:
+  career_private:
   certbot_www:
   certbot_conf:

@@ -18,6 +18,7 @@ exports.config = {
     uploadDir: process.env.UPLOAD_DIR || './uploads',
     baseUrl: process.env.BASE_URL || 'http://localhost:4000',
     frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+    careerUrl: process.env.CAREER_URL || 'http://localhost:3000',
     nodeEnv: process.env.NODE_ENV || 'development',
 };
 //# sourceMappingURL=env.js.map

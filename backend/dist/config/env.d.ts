@@ -10,6 +10,7 @@ export declare const config: {
     uploadDir: string;
     baseUrl: string;
     frontendUrl: string;
+    careerUrl: string;
     nodeEnv: string;
 };
 //# sourceMappingURL=env.d.ts.map

@@ -14,6 +14,7 @@ import authRoutes from './modules/auth/auth.routes';
 import certificateRoutes from './modules/certificates/certificates.routes';
 import userRoutes from './modules/users/users.routes';
 import auditRoutes from './modules/audit/audit.routes';
+import careerRoutes from './modules/career/career.routes';
 
 const app = express();
 
@@ -48,7 +49,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }, // uploads uchun
 }));
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: [config.frontendUrl, config.careerUrl],
   credentials: true,
 }));
 app.use(globalLimiter);
@@ -64,6 +65,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/certificates', certificateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/audit-logs', auditRoutes);
+app.use('/api/career/v1', careerRoutes);
 
 // Public verify endpoint (rate limited)
 app.get('/api/verify/:serialNumber', verifyLimiter, async (req, res) => {
@@ -85,7 +87,7 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 // Server ishga tushirish
-app.listen(config.port, () => {
+if (require.main === module) app.listen(config.port, () => {
   console.log(`✅ Server ishga tushdi: http://localhost:${config.port}`);
   console.log(`📦 Muhit: ${config.nodeEnv}`);
 });

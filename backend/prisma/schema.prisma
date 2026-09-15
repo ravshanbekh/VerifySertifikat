@@ -31,13 +31,13 @@ enum AuditAction {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String   @id @default(uuid())
   full_name     String
-  email         String    @unique
+  email         String   @unique
   password_hash String
-  role          Role      @default(operator)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
+  role          Role     @default(operator)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   certificates Certificate[]
   audit_logs   AuditLog[]
@@ -65,6 +65,9 @@ model Certificate {
   created_by User       @relation(fields: [created_by_id], references: [id])
   audit_logs AuditLog[]
 
+  career_profile CareerProfile?
+  career_invites CareerInvite[]
+
   @@index([serial_number])
   @@index([status])
   @@map("certificates")
@@ -85,4 +88,121 @@ model AuditLog {
   @@index([certificate_id])
   @@index([user_id])
   @@map("audit_logs")
+}
+
+// Career accounts are separate from certificate operators: no inherited admin access.
+enum CareerRole {
+  graduate
+  employer
+}
+
+enum CareerStatus {
+  pending
+  active
+  blocked
+}
+
+model CareerAccount {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  password_hash String
+  full_name     String
+  phone         String
+  telegram      String
+  role          CareerRole
+  status        CareerStatus    @default(pending)
+  company_name  String?
+  website       String?
+  industry      String?
+  consent_at    DateTime
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  profile       CareerProfile?
+  sessions      CareerSession[]
+  saved         CareerSaved[]
+  events        CareerEvent[]
+
+  @@map("career_accounts")
+}
+
+model CareerProfile {
+  id              String        @id @default(uuid())
+  account_id      String        @unique
+  certificate_id  String        @unique
+  headline        String        @default("")
+  bio             String        @default("") @db.Text
+  city            String        @default("")
+  level           String        @default("Junior")
+  work_format     String        @default("Hybrid")
+  work_type       String        @default("Full-time")
+  availability    String        @default("open")
+  technologies    String[]      @default([])
+  skills          String[]      @default([])
+  languages       String[]      @default([])
+  experience      String        @default("") @db.Text
+  projects        Json          @default("[]")
+  linkedin        String        @default("")
+  github          String        @default("")
+  portfolio       String        @default("")
+  avatar_url      String        @default("")
+  cv_filename     String?
+  published       Boolean       @default(false)
+  contact_consent Boolean       @default(false)
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  account         CareerAccount @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  certificate     Certificate   @relation(fields: [certificate_id], references: [id], onDelete: Restrict)
+  saved_by        CareerSaved[]
+
+  @@index([published, city, level])
+  @@map("career_profiles")
+}
+
+model CareerInvite {
+  id             String      @id @default(uuid())
+  certificate_id String
+  code_hash      String      @unique
+  grant_hash     String?     @unique
+  grant_expires  DateTime?
+  expires_at     DateTime
+  consumed_at    DateTime?
+  created_at     DateTime    @default(now())
+  certificate    Certificate @relation(fields: [certificate_id], references: [id], onDelete: Cascade)
+
+  @@index([certificate_id])
+  @@map("career_invites")
+}
+
+model CareerSession {
+  token_hash String        @id
+  account_id String
+  expires_at DateTime
+  account    CareerAccount @relation(fields: [account_id], references: [id], onDelete: Cascade)
+
+  @@index([expires_at])
+  @@map("career_sessions")
+}
+
+model CareerSaved {
+  employer_id String
+  profile_id  String
+  created_at  DateTime      @default(now())
+  employer    CareerAccount @relation(fields: [employer_id], references: [id], onDelete: Cascade)
+  profile     CareerProfile @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  @@id([employer_id, profile_id])
+  @@map("career_saved")
+}
+
+model CareerEvent {
+  id         String         @id @default(uuid())
+  account_id String?
+  action     String
+  target_id  String?
+  details    Json?
+  created_at DateTime       @default(now())
+  account    CareerAccount? @relation(fields: [account_id], references: [id], onDelete: SetNull)
+
+  @@index([account_id, created_at])
+  @@map("career_events")
 }

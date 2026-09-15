@@ -50,6 +50,7 @@ const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
 const certificates_routes_1 = __importDefault(require("./modules/certificates/certificates.routes"));
 const users_routes_1 = __importDefault(require("./modules/users/users.routes"));
 const audit_routes_1 = __importDefault(require("./modules/audit/audit.routes"));
+const career_routes_1 = __importDefault(require("./modules/career/career.routes"));
 const app = (0, express_1.default)();
 // Rate limit trust proxy
 app.set('trust proxy', 1);
@@ -79,7 +80,7 @@ app.use((0, helmet_1.default)({
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // uploads uchun
 }));
 app.use((0, cors_1.default)({
-    origin: env_1.config.frontendUrl,
+    origin: [env_1.config.frontendUrl, env_1.config.careerUrl],
     credentials: true,
 }));
 app.use(globalLimiter);
@@ -93,6 +94,7 @@ app.use('/api/auth', auth_routes_1.default);
 app.use('/api/certificates', certificates_routes_1.default);
 app.use('/api/users', users_routes_1.default);
 app.use('/api/audit-logs', audit_routes_1.default);
+app.use('/api/career/v1', career_routes_1.default);
 // Public verify endpoint (rate limited)
 app.get('/api/verify/:serialNumber', verifyLimiter, async (req, res) => {
     const { verifyCertificate } = await Promise.resolve().then(() => __importStar(require('./modules/certificates/certificates.controller')));
@@ -109,9 +111,10 @@ app.use((_req, res) => {
 // Error handler
 app.use(error_middleware_1.errorHandler);
 // Server ishga tushirish
-app.listen(env_1.config.port, () => {
-    console.log(`✅ Server ishga tushdi: http://localhost:${env_1.config.port}`);
-    console.log(`📦 Muhit: ${env_1.config.nodeEnv}`);
-});
+if (require.main === module)
+    app.listen(env_1.config.port, () => {
+        console.log(`✅ Server ishga tushdi: http://localhost:${env_1.config.port}`);
+        console.log(`📦 Muhit: ${env_1.config.nodeEnv}`);
+    });
 exports.default = app;
 //# sourceMappingURL=app.js.map
