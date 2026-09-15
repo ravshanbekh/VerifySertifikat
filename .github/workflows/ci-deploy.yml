@@ -37,8 +37,8 @@ jobs:
       JWT_REFRESH_SECRET: ci-only-refresh-secret-at-least-32-characters
       NODE_ENV: test
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -54,8 +54,8 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
           cache: npm
@@ -91,4 +91,6 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 -p "$DEPLOY_PORT"
           -o IdentitiesOnly=yes -o BatchMode=yes
           "$DEPLOY_USER@$DEPLOY_HOST"
-          "cd /root/VerifySertifikat && bash scripts/deploy-production.sh '$DEPLOY_SHA'"
+          "cd /root/VerifySertifikat &&
+          git fetch origin main && git merge --ff-only origin/main &&
+          bash scripts/deploy-production.sh '$DEPLOY_SHA'"
